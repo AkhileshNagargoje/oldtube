@@ -539,6 +539,13 @@ ytm-slim-video-information-renderer h1 {
   color: var(--ot-text-dim) !important;
 }
 
+/* Drop the "@" from the channel name. @handles didn't exist until 2022 — in
+   2016 this line read "CarryMinati", not "@CarryMinati". YouTube renders the
+   sigil as its own <span>, so hiding the first child leaves the name intact. */
+.slim-video-information-channel-name .ytAttributedStringHost > span:first-child {
+  display: none !important;
+}
+
 .slim-video-information-views,
 ytm-factoid-renderer {
   font-size: 13px !important;
