@@ -1,0 +1,499 @@
+/*
+ * OldTube — the 2016-2018 YouTube skin for m.youtube.com.
+ *
+ * The page underneath is current YouTube, so this is a repaint, not a rebuild:
+ * red app bar with the You[Tube] logo, square thumbnails, flat text buttons,
+ * dense two-line cards, and none of the chips, Shorts or pill buttons that
+ * arrived later.
+ *
+ * Two levers do most of the work:
+ *
+ *   1. YouTube themes itself through `--yt-spec-*` custom properties. Redefining
+ *      those recolours thousands of components at once, without naming any of
+ *      them — and it keeps working when the markup changes.
+ *   2. Everything else is per-component, and component names drift. Selectors
+ *      are grouped by feature and written broadly (attribute and prefix matches
+ *      over exact class names) so a rename degrades one detail instead of the
+ *      whole skin.
+ *
+ * !important is used freely and deliberately: YouTube ships inline styles.
+ */
+
+/* ==========================================================================
+   1. Palette
+   ========================================================================== */
+
+:root,
+html,
+html[dark],
+html[darker-dark-theme] {
+  /* --- the one switch worth knowing about ------------------------------
+     This is the 2016 Android-app look: red app bar, white content. For the
+     2017+ web look instead, set --ot-bar to #fff and --ot-bar-fg to #030303.
+     The logo follows along on its own.                                      */
+  --ot-bar: #e62117;
+  --ot-bar-fg: #ffffff;
+
+  --ot-red: #e62117;
+  --ot-text: #030303;
+  --ot-text-dim: #767676;
+  --ot-line: #e2e2e2;
+  --ot-bg: #ffffff;
+
+  /* YouTube's own theme tokens, pinned to 2016 light. */
+  --yt-spec-base-background: var(--ot-bg) !important;
+  --yt-spec-raised-background: var(--ot-bg) !important;
+  --yt-spec-menu-background: var(--ot-bg) !important;
+  --yt-spec-general-background-a: var(--ot-bg) !important;
+  --yt-spec-general-background-b: var(--ot-bg) !important;
+  --yt-spec-general-background-c: var(--ot-bg) !important;
+  --yt-spec-brand-background-primary: var(--ot-bg) !important;
+  --yt-spec-brand-background-secondary: #f9f9f9 !important;
+  --yt-spec-brand-background-solid: var(--ot-bg) !important;
+  --yt-spec-additive-background: rgba(0, 0, 0, 0.05) !important;
+  --yt-spec-inverted-background: #030303 !important;
+
+  --yt-spec-text-primary: var(--ot-text) !important;
+  --yt-spec-text-primary-inverse: #ffffff !important;
+  --yt-spec-text-secondary: var(--ot-text-dim) !important;
+  --yt-spec-text-disabled: #909090 !important;
+  --yt-spec-call-to-action: #167ac6 !important;
+  --yt-spec-call-to-action-inverse: #3ea6ff !important;
+
+  --yt-spec-icon-active-other: #606060 !important;
+  --yt-spec-icon-inactive: #909090 !important;
+  --yt-spec-icon-disabled: #c6c6c6 !important;
+
+  --yt-spec-10-percent-layer: rgba(0, 0, 0, 0.1) !important;
+  --yt-spec-outline: var(--ot-line) !important;
+  --yt-spec-static-overlay-background-solid: #000000 !important;
+
+  --yt-spec-static-brand-red: var(--ot-red) !important;
+  --yt-spec-brand-button-background: var(--ot-red) !important;
+  --yt-brand-medium-red: var(--ot-red) !important;
+
+  color-scheme: light !important;
+}
+
+html,
+body {
+  background: var(--ot-bg) !important;
+  color: var(--ot-text) !important;
+  /* Roboto is the system font here; 2016 YouTube used it everywhere. */
+  font-family: Roboto, "Helvetica Neue", Arial, sans-serif !important;
+}
+
+/* ==========================================================================
+   2. Square everything
+
+   Rounded corners are the single loudest tell of modern YouTube. Strip them
+   from media and controls, then hand circles back to the things that were
+   always round: channel avatars.
+   ========================================================================== */
+
+img,
+video,
+button,
+input,
+[class*="thumbnail"],
+[class*="lockup"],
+[class*="chip"],
+[class*="pill"],
+[class*="card"],
+[class*="badge"],
+[class*="button"],
+.yt-core-image,
+.yt-spec-button-shape-next,
+.yt-spec-touch-feedback-shape {
+  border-radius: 0 !important;
+}
+
+/* Avatars stay circular. */
+[class*="avatar"] img,
+[class*="avatar"] .yt-core-image,
+[class*="profile"] img,
+[class*="channel-thumbnail"] img,
+img[class*="avatar"],
+yt-avatar-shape img,
+.yt-spec-avatar-shape img {
+  border-radius: 50% !important;
+}
+
+/* ==========================================================================
+   3. Top bar — red, with the classic You[Tube] wordmark
+   ========================================================================== */
+
+ytm-mobile-topbar-renderer,
+.mobile-topbar-header,
+header.mobile-topbar-header,
+ytm-searchbox-header-renderer,
+.searchbox-header {
+  background: var(--ot-bar) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25) !important;
+  border-bottom: none !important;
+}
+
+/* Icons and text on the bar go white (or whatever --ot-bar-fg says). */
+ytm-mobile-topbar-renderer button,
+ytm-mobile-topbar-renderer c3-icon,
+ytm-mobile-topbar-renderer svg,
+ytm-mobile-topbar-renderer .yt-core-attributed-string,
+.mobile-topbar-header svg,
+.mobile-topbar-header button,
+.searchbox-header svg,
+.searchbox-header input {
+  color: var(--ot-bar-fg) !important;
+  fill: var(--ot-bar-fg) !important;
+}
+
+.searchbox-header input::placeholder {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+/* Drop YouTube's current logo art... */
+ytm-topbar-logo-renderer svg,
+ytm-topbar-logo-renderer img,
+.topbar-logo svg,
+.topbar-logo img,
+a[title="YouTube"] svg,
+a[aria-label="YouTube"] svg {
+  display: none !important;
+}
+
+/* ...and draw the pre-2017 one in its place: white "You", then "Tube" reversed
+   out of a white box. Two pseudo-elements, no image assets. */
+ytm-topbar-logo-renderer > a,
+ytm-topbar-logo-renderer,
+.topbar-logo {
+  display: inline-flex !important;
+  align-items: center !important;
+  text-decoration: none !important;
+  overflow: visible !important;
+}
+
+ytm-topbar-logo-renderer > a::before,
+.topbar-logo::before {
+  content: "You";
+  color: var(--ot-bar-fg);
+  font: 700 20px/1 Roboto, Arial, sans-serif;
+  letter-spacing: -0.5px;
+}
+
+ytm-topbar-logo-renderer > a::after,
+.topbar-logo::after {
+  content: "Tube";
+  color: var(--ot-bar);
+  background: var(--ot-bar-fg);
+  font: 700 20px/1 Roboto, Arial, sans-serif;
+  letter-spacing: -0.5px;
+  padding: 3px 4px 4px;
+  margin-left: 2px;
+  border-radius: 3px !important;
+}
+
+/* ==========================================================================
+   4. Bottom navigation — 2017 style: white, flat, labels always showing
+   ========================================================================== */
+
+ytm-pivot-bar-renderer,
+.pivot-bar {
+  background: var(--ot-bg) !important;
+  border-top: 1px solid var(--ot-line) !important;
+  box-shadow: none !important;
+}
+
+ytm-pivot-bar-item-renderer,
+.pivot-bar-item-tab {
+  color: var(--ot-text-dim) !important;
+}
+
+.pivot-bar-item-title,
+ytm-pivot-bar-item-renderer .pivot-bar-item-title {
+  font-size: 10px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+
+/* Selected tab reads red, the way it did before the black-pill treatment. */
+ytm-pivot-bar-item-renderer[is-selected],
+ytm-pivot-bar-item-renderer[selected],
+.pivot-bar-item-tab[aria-selected="true"],
+.pivot-bar-item-tab.is-active {
+  color: var(--ot-red) !important;
+  background: transparent !important;
+}
+
+ytm-pivot-bar-item-renderer[is-selected] svg,
+.pivot-bar-item-tab[aria-selected="true"] svg {
+  fill: var(--ot-red) !important;
+}
+
+/* Tabs that didn't exist in 2016. */
+.pivot-shorts,
+.pivot-create,
+ytm-pivot-bar-item-renderer.pivot-shorts,
+ytm-pivot-bar-item-renderer.pivot-create {
+  display: none !important;
+}
+
+/* ==========================================================================
+   5. Things from after 2018 — remove outright
+   ========================================================================== */
+
+/* Filter chip rows ("All", "Music", "Live", ...) — a 2019 addition. */
+ytm-feed-filter-chip-bar-renderer,
+ytm-chip-cloud-renderer,
+ytm-chip-cloud-chip-renderer,
+.chip-bar,
+.filter-chip-bar {
+  display: none !important;
+}
+
+/* Shorts, in every shape it ships as. */
+ytm-reel-shelf-renderer,
+ytm-shorts-lockup-view-model,
+ytm-shorts-lockup-view-model-v2,
+ytm-reel-item-renderer,
+grid-shelf-view-model,
+[is-shorts],
+a[href^="/shorts"],
+ytm-rich-section-renderer:has(ytm-shorts-lockup-view-model),
+ytm-item-section-renderer:has(ytm-reel-shelf-renderer),
+ytm-rich-item-renderer:has(a[href^="/shorts"]) {
+  display: none !important;
+}
+
+/* Post-2018 feed furniture: hype/clip/thanks/membership shelves, "Breaking
+   news", mixes-as-cards, and the AI blurbs. */
+ytm-emergency-onebox-renderer,
+ytm-clip-creation-renderer,
+ytm-info-panel-container-renderer,
+ytm-brand-video-shelf-renderer,
+ytm-companion-slot-renderer,
+ytm-carousel-header-renderer,
+ytm-statement-banner-renderer,
+ytm-promoted-video-renderer,
+ytm-promoted-sparkles-web-renderer,
+ytm-compact-promoted-video-renderer,
+ytm-primetime-promo-renderer,
+[class*="ad-slot"],
+[class*="-ad-"],
+ytm-inline-survey-renderer,
+ytm-notification-permission-prompt-renderer {
+  display: none !important;
+}
+
+/* ==========================================================================
+   6. Feed cards — square thumb, two-line title, grey byline
+   ========================================================================== */
+
+ytm-video-with-context-renderer,
+ytm-compact-video-renderer,
+ytm-rich-item-renderer,
+yt-lockup-view-model,
+.media-item {
+  background: var(--ot-bg) !important;
+  border-bottom: 1px solid var(--ot-line) !important;
+  padding: 0 0 10px !important;
+  margin: 0 !important;
+}
+
+.media-item-thumbnail-container,
+yt-thumbnail-view-model,
+ytm-thumbnail-cover {
+  border-radius: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+.media-item-thumbnail-container img,
+yt-thumbnail-view-model img,
+.media-item-thumbnail-container .yt-core-image {
+  border-radius: 0 !important;
+  width: 100% !important;
+}
+
+/* Title: 14px, two lines, near-black — not the heavier modern 16px. */
+.media-item-headline,
+.media-item-headline .yt-core-attributed-string,
+h3.media-item-headline span,
+yt-lockup-metadata-view-model h3,
+.yt-lockup-metadata-view-model-wiz__title {
+  font-size: 14px !important;
+  line-height: 19px !important;
+  font-weight: 500 !important;
+  color: var(--ot-text) !important;
+  letter-spacing: 0 !important;
+  max-height: 38px !important;
+  overflow: hidden !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+}
+
+/* Byline + metadata: 12px grey, all on one line. */
+.media-item-byline,
+.media-item-metadata-content,
+ytm-badge-and-byline-renderer,
+.yt-content-metadata-view-model-wiz__metadata-row,
+.yt-content-metadata-view-model-wiz__metadata-text {
+  font-size: 12px !important;
+  line-height: 16px !important;
+  font-weight: 400 !important;
+  color: var(--ot-text-dim) !important;
+}
+
+.media-item-metadata {
+  padding: 8px 12px 0 !important;
+}
+
+/* Section headers ("Recommended", "Trending") — small, grey, uppercase. */
+ytm-item-section-header-renderer,
+.item-section-header,
+ytm-shelf-header-layout {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  color: var(--ot-text-dim) !important;
+  padding: 12px !important;
+}
+
+/* ==========================================================================
+   7. Watch page
+   ========================================================================== */
+
+ytm-slim-video-metadata-section-renderer,
+.slim-video-metadata-section {
+  padding: 12px !important;
+  border-bottom: 1px solid var(--ot-line) !important;
+}
+
+.slim-video-information-title,
+.slim-video-information-title .yt-core-attributed-string,
+ytm-slim-video-information-renderer h1 {
+  font-size: 16px !important;
+  line-height: 22px !important;
+  font-weight: 500 !important;
+  color: var(--ot-text) !important;
+}
+
+.slim-video-information-views,
+.slim-video-metadata-title-modern-metadata,
+ytm-factoid-renderer {
+  font-size: 13px !important;
+  color: var(--ot-text-dim) !important;
+}
+
+/* The action row was flat icon-over-label columns, not grey pills. */
+ytm-slim-video-action-bar-renderer,
+.slim-video-action-bar,
+.slim-video-action-bar-actions {
+  background: var(--ot-bg) !important;
+  border-top: 1px solid var(--ot-line) !important;
+  border-bottom: 1px solid var(--ot-line) !important;
+  padding: 4px 0 !important;
+}
+
+.slim-video-action-bar-actions button,
+ytm-slim-video-action-bar-renderer button,
+ytm-button-renderer button {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--ot-text-dim) !important;
+  text-transform: uppercase !important;
+  font-size: 11px !important;
+  letter-spacing: 0.4px !important;
+  box-shadow: none !important;
+}
+
+/* Segmented like/dislike control: no capsule, no divider pill. */
+segmented-like-dislike-button-view-model,
+.YtSegmentedLikeDislikeButtonViewModelHost,
+like-button-view-model,
+dislike-button-view-model {
+  background: transparent !important;
+  border-radius: 0 !important;
+}
+
+/* Subscribe: the flat red rectangle, not a black pill. */
+ytm-subscribe-button-renderer button,
+button[aria-label*="Subscribe"],
+.subscribe-button-renderer button {
+  background: var(--ot-red) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 2px !important;
+  text-transform: uppercase !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.5px !important;
+  padding: 8px 14px !important;
+}
+
+/* Already-subscribed state was grey text, no fill. */
+ytm-subscribe-button-renderer button[subscribed],
+button[aria-label*="Unsubscribe"] {
+  background: transparent !important;
+  color: var(--ot-text-dim) !important;
+}
+
+/* Comments and up-next rows sit in the same flat list as everything else. */
+ytm-comment-thread-renderer,
+ytm-comment-renderer,
+ytm-comments-entry-point-header-renderer {
+  background: var(--ot-bg) !important;
+  border-radius: 0 !important;
+  border-bottom: 1px solid var(--ot-line) !important;
+  padding: 12px !important;
+}
+
+ytm-engagement-panel-section-list-renderer,
+.engagement-panel {
+  border-radius: 0 !important;
+  background: var(--ot-bg) !important;
+}
+
+/* ==========================================================================
+   8. Buttons and search, everywhere else
+   ========================================================================== */
+
+.yt-spec-button-shape-next--filled,
+.yt-spec-button-shape-next--tonal,
+yt-button-shape button {
+  border-radius: 2px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.4px !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+}
+
+/* Search suggestions: plain white list. */
+ytm-search-suggestion-renderer,
+.searchbox-suggestions,
+ytm-autocomplete-suggestion-renderer {
+  background: var(--ot-bg) !important;
+  border-radius: 0 !important;
+  border-bottom: 1px solid var(--ot-line) !important;
+  font-size: 14px !important;
+}
+
+/* Channel page header: no giant rounded banner treatment. */
+ytm-channel-header-renderer,
+.channel-header,
+yt-page-header-view-model {
+  border-radius: 0 !important;
+  background: var(--ot-bg) !important;
+}
+
+/* Scrim/overlay tweaks so nothing modern peeks through. */
+ytm-sheet-renderer,
+.dialog-container,
+ytm-menu-renderer {
+  border-radius: 0 !important;
+  background: var(--ot-bg) !important;
+}

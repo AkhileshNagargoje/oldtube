@@ -1,0 +1,5 @@
+# gradlew is a shell script — CRLF would break it on macOS and Linux.
+* text=auto eol=lf
+*.bat text eol=crlf
+*.jar binary
+*.png binary
