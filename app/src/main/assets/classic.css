@@ -351,9 +351,15 @@ ytm-reel-item-renderer,
 grid-shelf-view-model,
 [is-shorts],
 a[href^="/shorts"],
-ytm-rich-section-renderer:has(ytm-shorts-lockup-view-model),
 ytm-item-section-renderer:has(ytm-reel-shelf-renderer),
-ytm-rich-item-renderer:has(a[href^="/shorts"]) {
+ytm-rich-item-renderer:has(a[href^="/shorts"]),
+/* Home ships Shorts and Playables as `ytm-rich-section-renderer` shelves.
+   Matching on the links inside is what actually catches them — the earlier
+   `:has(ytm-shorts-lockup-view-model)` never did. Real videos are
+   `ytm-rich-item-renderer`, so nothing legitimate goes with them. */
+ytm-rich-section-renderer:has(a[href^="/shorts"]),
+ytm-rich-section-renderer:has(a[href^="/playables"]),
+a[href^="/playables"] {
   display: none !important;
 }
 
@@ -508,6 +514,9 @@ ytm-slim-video-metadata-section-renderer,
   border-bottom: 1px solid var(--ot-line) !important;
 }
 
+/* Title: two lines. YouTube ships it as a single truncated line
+   (`.title-overflow`); 2016 wrapped and showed the whole thing. */
+h2.slim-video-information-title,
 .slim-video-information-title,
 .slim-video-information-title .ytAttributedStringHost,
 ytm-slim-video-information-renderer h1 {
@@ -515,6 +524,19 @@ ytm-slim-video-information-renderer h1 {
   line-height: 22px !important;
   font-weight: 500 !important;
   color: var(--ot-text) !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  white-space: normal !important;
+  text-overflow: clip !important;
+  max-height: 44px !important;
+}
+
+.slim-video-information-subtitle,
+.slim-video-information-subtitle-container {
+  font-size: 13px !important;
+  color: var(--ot-text-dim) !important;
 }
 
 .slim-video-information-views,
@@ -544,6 +566,97 @@ ytm-button-renderer button {
   font-size: 11px !important;
   letter-spacing: 0.4px !important;
   box-shadow: none !important;
+}
+
+/* --- the action row ----------------------------------------------------
+   2016 stacked an uppercase label under each icon: LIKE, DISLIKE, SHARE,
+   SAVE. Modern YouTube ships these icon-only, with the name living solely in
+   `aria-label` — there is no text node to restyle. So the labels are drawn
+   back on with generated content keyed off that attribute. If YouTube ever
+   changes the aria wording, the icons simply lose their captions; nothing
+   else breaks.
+
+   Subscribe is excluded — it's in the same bar but already has its text. */
+/* The caption is positioned out of flow on purpose. YouTube decides how many
+   actions fit by measuring them against the bar (359px here), so widening the
+   buttons to hold a label made Share overflow and it stopped rendering the
+   button at all. Absolute positioning keeps each button its original 48px, so
+   YouTube's arithmetic is untouched and Share survives. */
+ytm-slim-video-action-bar-renderer button[aria-label]:not([aria-label^="Subscribe"]) {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+ytm-slim-video-action-bar-renderer button[aria-label]:not([aria-label^="Subscribe"])::after {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  /* 9px, tight tracking: the captions are wider than the 48px buttons they
+     hang under, and at 10px "SHARE" and "MORE" collide. */
+  font: 500 9px/1 Roboto, Arial, sans-serif;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  color: var(--ot-text-dim);
+}
+
+/* Room under the icons for those captions. */
+ytm-slim-video-action-bar-renderer,
+.slim-video-action-bar-actions {
+  padding-bottom: 16px !important;
+  overflow: visible !important;
+}
+
+/* aria-label for the like button reads "like this video along with N others"
+   and flips to "Unlike" once pressed, hence both spellings. */
+/* Every selector below must stay scoped to the action bar. "More actions" is
+   also the aria-label on each feed card's overflow button, so an unscoped
+   rule captions all of them and leaks a stray "MORE" down the whole feed. */
+ytm-slim-video-action-bar-renderer button[aria-label^="like"]::after,
+ytm-slim-video-action-bar-renderer button[aria-label^="Like"]::after,
+ytm-slim-video-action-bar-renderer button[aria-label^="Unlike"]::after {
+  content: "Like";
+}
+
+ytm-slim-video-action-bar-renderer button[aria-label^="Dislike"]::after,
+ytm-slim-video-action-bar-renderer button[aria-label^="Undislike"]::after {
+  content: "Dislike";
+}
+
+ytm-slim-video-action-bar-renderer button[aria-label="Share"]::after {
+  content: "Share";
+}
+
+ytm-slim-video-action-bar-renderer button[aria-label="Save"]::after,
+ytm-slim-video-action-bar-renderer button[aria-label*="Save to"]::after {
+  content: "Save";
+}
+
+ytm-slim-video-action-bar-renderer button[aria-label="More"]::after,
+ytm-slim-video-action-bar-renderer button[aria-label*="More actions"]::after {
+  content: "More";
+}
+
+/* The "Ask" sparkle is a 2024 AI addition. */
+ytm-slim-video-action-bar-renderer button[aria-label="Ask"] {
+  display: none !important;
+}
+
+/* Comments preview arrives as a rounded grey card; 2016 had a plain section
+   between hairlines. */
+yt-video-metadata-carousel-view-model,
+[class*="MetadataCarousel"] {
+  border-radius: 0 !important;
+  background: transparent !important;
+  border-top: 1px solid var(--ot-line) !important;
+  border-bottom: 1px solid var(--ot-line) !important;
+}
+
+/* The "OPEN APP" prompt in the top bar. Its link is the only intent:// URL
+   on the page, which makes it the one stable thing to match. */
+a[href^="intent://"] {
+  display: none !important;
 }
 
 /* Segmented like/dislike control: no capsule, no divider pill. */
