@@ -139,7 +139,16 @@ ytm-media-item,
   box-shadow: none !important;
 }
 
-/* Avatars stay circular — they always were. */
+/* Avatars stay circular — they always were. This has to cover the element
+   *and* its children: a channel with no picture renders as a coloured letter
+   tile (a div, not an img), and rounding only the <img> leaves that square. */
+ytm-profile-icon,
+ytm-profile-icon *,
+[class*="ProfileIcon"],
+[class*="ProfileIcon"] *,
+.pivot-bar-item-tab.you img,
+.pivot-bar-item-tab.you [class*="rofile"],
+.pivot-you img,
 img.ytProfileIconImage,
 ytm-profile-icon.ytProfileIconHost,
 .ytProfileIconHost img,
@@ -149,7 +158,14 @@ ytm-profile-icon.ytProfileIconHost,
 [class*="channel-thumbnail"] img,
 img[class*="avatar"],
 yt-avatar-shape img,
-.yt-spec-avatar-shape img {
+.yt-spec-avatar-shape img,
+/* The bottom-bar account avatar, named with a capital A: `yt-avatar-shape`
+   wrapping `img.ytSpecAvatarShapeImage`. Listed explicitly, and matched via
+   a descendant so it outranks any single-class de-rounding rule. */
+img.ytSpecAvatarShapeImage,
+[class*="AvatarShape"] img,
+[class*="AvatarShape"] div,
+avatar-view-model img {
   border-radius: 50% !important;
 }
 
@@ -365,9 +381,13 @@ yt-thumbnail-view-model {
   overflow: hidden !important;
 }
 
+/* No `img.ytCoreImageHost` here. Every YouTube image carries that class, so
+   it reaches avatars too — and at (0,1,1) it ties with the avatar rule above
+   and wins on document order, squaring every avatar on the page. Section 2's
+   `[class*="ytCoreImage"]` already de-rounds images generally; this rule only
+   needs the thumbnail-specific selectors. */
 .media-item-thumbnail-container img,
 .video-thumbnail-img,
-img.ytCoreImageHost,
 .media-item-thumbnail-container .yt-core-image {
   border-radius: 0 !important;
 }
@@ -422,6 +442,29 @@ ytm-badge-and-byline-renderer,
 .media-item-details,
 .media-channel {
   padding: 8px 12px 0 !important;
+}
+
+/* Channel results. YouTube renders the channel's avatar into a 16:9 video
+   thumbnail slot, which the de-rounding then leaves as a letterboxed square.
+   In 2016 a channel result was a plain circular avatar, so force it back to
+   one. `img.ytCoreImageHost` here is (0,1,2) — it has to outrank the generic
+   image de-rounding, which is (0,1,1). */
+ytm-compact-channel-renderer ytm-compact-thumbnail,
+ytm-compact-channel-renderer .video-thumbnail-img,
+ytm-compact-channel-renderer img.ytCoreImageHost {
+  border-radius: 50% !important;
+  width: 88px !important;
+  height: 88px !important;
+  object-fit: cover !important;
+  background: transparent !important;
+}
+
+ytm-compact-channel-renderer a.YtmCompactMediaItemImage {
+  width: auto !important;
+  padding: 0 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 /* Section headers ("Recommended", "Trending") — small, grey, uppercase. */
@@ -493,11 +536,24 @@ dislike-button-view-model {
   border-radius: 0 !important;
 }
 
-/* Subscribe: the flat red rectangle, not a black pill. */
-ytm-subscribe-button-renderer button,
-button[aria-label*="Subscribe"],
-[class*="AnimatedSubscribeButton"] button,
-.ytwAnimatedSubscribeButtonContentContainer {
+/* Subscribe: the flat red rectangle, not a black pill.
+   The button is a stack of ~8 nested divs (smartimation > animated-action >
+   lottie backdrop > content). Painting several of them red stacks slightly
+   different shades and shows up as a lighter box inside the button, so strip
+   every descendant back to transparent and paint exactly one surface. */
+ytm-subscribe-button-renderer *,
+[class*="SubscribeButton"] *,
+[class*="AnimatedAction"],
+[class*="AnimatedAction"] * {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+ytm-subscribe-button-renderer .modern-subscribe-button,
+[class*="SubscribeButton"] .modern-subscribe-button,
+button[aria-label*="Subscribe"] {
   background: var(--ot-red) !important;
   color: #ffffff !important;
   border: none !important;
@@ -506,7 +562,6 @@ button[aria-label*="Subscribe"],
   font-size: 12px !important;
   font-weight: 500 !important;
   letter-spacing: 0.5px !important;
-  padding: 8px 14px !important;
 }
 
 /* Already-subscribed state was grey text, no fill. */

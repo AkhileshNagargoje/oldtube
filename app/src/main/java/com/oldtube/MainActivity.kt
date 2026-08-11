@@ -2,8 +2,10 @@ package com.oldtube
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -19,6 +21,21 @@ import androidx.activity.OnBackPressedCallback
 import org.json.JSONObject
 
 private const val HOME = "https://m.youtube.com/"
+private const val TAG = "OldTube"
+
+/**
+ * Hosts that stay inside the app: YouTube itself, its asset CDNs, and the whole
+ * Google sign-in flow.
+ *
+ * `google\.[a-z.]+` rather than `google.com` on purpose — sign-in redirects
+ * through country domains (accounts.google.co.in, .co.uk, .de). Matching only
+ * .com sends those to the real browser mid-login, which reads as "it opened
+ * Chrome and forgot who I am".
+ */
+private val INTERNAL_HOST = Regex(
+    """(^|\.)(google\.[a-z]{2,}(\.[a-z]{2,})?|youtube\.com|youtube-nocookie\.com|youtu\.be|""" +
+        """ytimg\.com|ggpht\.com|googleusercontent\.com|gstatic\.com|googleapis\.com)$""",
+)
 
 /**
  * A thin shell around m.youtube.com. YouTube itself does all the work — account,
@@ -48,6 +65,12 @@ class MainActivity : ComponentActivity() {
             ),
         )
         setContentView(root)
+
+        // Debug builds only: lets `chrome://inspect` attach to the WebView, so
+        // the page can be inspected with real devtools instead of screenshots.
+        if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
+            WebView.setWebContentsDebuggingEnabled(true)
+        }
 
         web.settings.apply {
             javaScriptEnabled = true
@@ -130,17 +153,28 @@ class MainActivity : ComponentActivity() {
             view: WebView?,
             request: WebResourceRequest?,
         ): Boolean {
-            val host = request?.url?.host ?: return false
-            // Keep YouTube and the Google sign-in flow in-app; everything else
-            // (links in descriptions, ads) goes to the real browser.
-            val internal = host.endsWith("youtube.com") ||
-                host.endsWith("youtu.be") ||
-                host.endsWith("google.com") ||
-                host.endsWith("googleusercontent.com") ||
-                host.endsWith("ggpht.com")
+            val url = request?.url ?: return false
+            val host = url.host ?: return false
+
+            // Anything that isn't plain web navigation (intent://, market://,
+            // tel:) is not ours to render — but it isn't a browser link either.
+            val scheme = url.scheme?.lowercase()
+            if (scheme != "http" && scheme != "https") {
+                Log.i(TAG, "nav: $scheme -> ignored")
+                return true
+            }
+
+            val internal = INTERNAL_HOST.containsMatchIn(host)
+            Log.i(TAG, "nav: $host -> ${if (internal) "in-app" else "EXTERNAL"}  ($url)")
             if (internal) return false
 
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(request.url.toString())))
+            // Descriptions and ads link out; hand those to the real browser.
+            try {
+                startActivity(Intent(Intent.ACTION_VIEW, url))
+            } catch (e: android.content.ActivityNotFoundException) {
+                Log.w(TAG, "no browser for $url", e)
+                return false
+            }
             return true
         }
     }
