@@ -108,6 +108,8 @@ input,
 [class*="Button"],
 [class*="rounded"],
 [class*="Rounded"],
+[class*="nudge"],
+.feed-nudge-content-wrapper,
 [class*="ytSpecButtonShapeNext"],
 [class*="ytSpecTouchFeedbackShape"],
 [class*="ytCoreImage"],
@@ -131,6 +133,8 @@ ytm-media-item,
 [class*="ytSpecButtonShapeNext"],
 [class*="card"],
 [class*="Card"],
+[class*="nudge"],
+.feed-nudge-content-wrapper,
 .search-bar {
   box-shadow: none !important;
 }
@@ -366,6 +370,15 @@ yt-thumbnail-view-model {
 img.ytCoreImageHost,
 .media-item-thumbnail-container .yt-core-image {
   border-radius: 0 !important;
+}
+
+/* Only thumbnails go full-bleed. This has to stay scoped to a thumbnail
+   container: `img.ytCoreImageHost` on its own matches every image on the
+   page, including the empty-state wordmark, and stretches it edge to edge. */
+.media-item-thumbnail-container img,
+ytm-thumbnail-cover img,
+ytm-compact-thumbnail img,
+.video-thumbnail-img {
   width: 100% !important;
 }
 
