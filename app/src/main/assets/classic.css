@@ -2,19 +2,20 @@
  * OldTube — the 2016-2018 YouTube skin for m.youtube.com.
  *
  * The page underneath is current YouTube, so this is a repaint, not a rebuild:
- * red app bar with the You[Tube] logo, square thumbnails, flat text buttons,
+ * red app bar with the You[Tube] wordmark, square thumbnails, flat text buttons,
  * dense two-line cards, and none of the chips, Shorts or pill buttons that
  * arrived later.
  *
- * Two levers do most of the work:
+ * Selectors here were read off the live m.youtube.com DOM, not guessed. Two
+ * things to know before editing:
  *
  *   1. YouTube themes itself through `--yt-spec-*` custom properties. Redefining
  *      those recolours thousands of components at once, without naming any of
  *      them — and it keeps working when the markup changes.
- *   2. Everything else is per-component, and component names drift. Selectors
- *      are grouped by feature and written broadly (attribute and prefix matches
- *      over exact class names) so a rename degrades one detail instead of the
- *      whole skin.
+ *   2. YouTube is mid-migration from kebab-case class names (`.yt-core-image`)
+ *      to camelCase ones (`.ytCoreImageHost`), and A/B tests serve both. Rules
+ *      below list both spellings on purpose. Deleting the "old" half will
+ *      silently break the skin for whichever bucket you land in.
  *
  * !important is used freely and deliberately: YouTube ships inline styles.
  */
@@ -86,9 +87,9 @@ body {
 /* ==========================================================================
    2. Square everything
 
-   Rounded corners are the single loudest tell of modern YouTube. Strip them
-   from media and controls, then hand circles back to the things that were
-   always round: channel avatars.
+   Rounded corners and soft shadows are the loudest tells of modern YouTube.
+   The `*Rounded`/`rounded-*` class matches catch the ones YouTube names
+   honestly; the explicit list catches the rest.
    ========================================================================== */
 
 img,
@@ -96,22 +97,51 @@ video,
 button,
 input,
 [class*="thumbnail"],
+[class*="Thumbnail"],
 [class*="lockup"],
 [class*="chip"],
 [class*="pill"],
 [class*="card"],
 [class*="badge"],
+[class*="Badge"],
 [class*="button"],
+[class*="Button"],
+[class*="rounded"],
+[class*="Rounded"],
+[class*="ytSpecButtonShapeNext"],
+[class*="ytSpecTouchFeedbackShape"],
+[class*="ytCoreImage"],
 .yt-core-image,
 .yt-spec-button-shape-next,
-.yt-spec-touch-feedback-shape {
+.yt-spec-touch-feedback-shape,
+.video-thumbnail-img,
+.video-thumbnail-bg,
+.search-bar,
+ytm-thumbnail-cover,
+ytm-compact-thumbnail,
+badge-shape {
   border-radius: 0 !important;
 }
 
-/* Avatars stay circular. */
+/* 2016 was a flat-shadow era: one hairline, never a soft drop. */
+ytm-video-with-context-renderer,
+ytm-compact-video-renderer,
+ytm-rich-item-renderer,
+ytm-media-item,
+[class*="ytSpecButtonShapeNext"],
+[class*="card"],
+[class*="Card"],
+.search-bar {
+  box-shadow: none !important;
+}
+
+/* Avatars stay circular — they always were. */
+img.ytProfileIconImage,
+ytm-profile-icon.ytProfileIconHost,
+.ytProfileIconHost img,
+[class*="ProfileIcon"] img,
 [class*="avatar"] img,
-[class*="avatar"] .yt-core-image,
-[class*="profile"] img,
+[class*="Avatar"] img,
 [class*="channel-thumbnail"] img,
 img[class*="avatar"],
 yt-avatar-shape img,
@@ -123,9 +153,9 @@ yt-avatar-shape img,
    3. Top bar — red, with the classic You[Tube] wordmark
    ========================================================================== */
 
+header.mobile-topbar-header,
 ytm-mobile-topbar-renderer,
 .mobile-topbar-header,
-header.mobile-topbar-header,
 ytm-searchbox-header-renderer,
 .searchbox-header {
   background: var(--ot-bar) !important;
@@ -134,53 +164,56 @@ ytm-searchbox-header-renderer,
 }
 
 /* Icons and text on the bar go white (or whatever --ot-bar-fg says). */
-ytm-mobile-topbar-renderer button,
-ytm-mobile-topbar-renderer c3-icon,
-ytm-mobile-topbar-renderer svg,
-ytm-mobile-topbar-renderer .yt-core-attributed-string,
+header.mobile-topbar-header button,
+header.mobile-topbar-header c3-icon,
+header.mobile-topbar-header svg,
+header.mobile-topbar-header .ytAttributedStringHost,
 .mobile-topbar-header svg,
 .mobile-topbar-header button,
 .searchbox-header svg,
-.searchbox-header input {
+.searchbox-header input,
+.search-bar input {
   color: var(--ot-bar-fg) !important;
   fill: var(--ot-bar-fg) !important;
 }
 
-.searchbox-header input::placeholder {
+.searchbox-header input::placeholder,
+.search-bar input::placeholder {
   color: rgba(255, 255, 255, 0.75) !important;
 }
 
-/* Drop YouTube's current logo art... */
+/* --- the logo ----------------------------------------------------------
+   YouTube renders its wordmark as an <svg> inside `c3-icon#home-icon`. Hide
+   the art and draw the pre-2017 mark with two pseudo-elements instead: white
+   "You", then "Tube" reversed out of a white box. No image assets involved.  */
+
+c3-icon.mobile-topbar-logo > span,
+c3-icon.mobile-topbar-logo svg,
+c3-icon#home-icon > span,
+c3-icon#home-icon svg,
 ytm-topbar-logo-renderer svg,
-ytm-topbar-logo-renderer img,
 .topbar-logo svg,
-.topbar-logo img,
-a[title="YouTube"] svg,
-a[aria-label="YouTube"] svg {
+.topbar-logo img {
   display: none !important;
 }
 
-/* ...and draw the pre-2017 one in its place: white "You", then "Tube" reversed
-   out of a white box. Two pseudo-elements, no image assets. */
-ytm-topbar-logo-renderer > a,
-ytm-topbar-logo-renderer,
-.topbar-logo {
+c3-icon.mobile-topbar-logo,
+c3-icon#home-icon.mobile-topbar-logo {
   display: inline-flex !important;
   align-items: center !important;
-  text-decoration: none !important;
+  width: auto !important;
+  height: auto !important;
   overflow: visible !important;
 }
 
-ytm-topbar-logo-renderer > a::before,
-.topbar-logo::before {
+c3-icon.mobile-topbar-logo::before {
   content: "You";
   color: var(--ot-bar-fg);
   font: 700 20px/1 Roboto, Arial, sans-serif;
   letter-spacing: -0.5px;
 }
 
-ytm-topbar-logo-renderer > a::after,
-.topbar-logo::after {
+c3-icon.mobile-topbar-logo::after {
   content: "Tube";
   color: var(--ot-bar);
   background: var(--ot-bar-fg);
@@ -191,24 +224,39 @@ ytm-topbar-logo-renderer > a::after,
   border-radius: 3px !important;
 }
 
+/* Search field sitting in the red bar: flat, translucent, square. */
+.search-bar {
+  background: rgba(0, 0, 0, 0.12) !important;
+  border: none !important;
+}
+
 /* ==========================================================================
    4. Bottom navigation — 2017 style: white, flat, labels always showing
+
+   Confirmed against contemporary reporting: the bar was white with red tab
+   indicators, carrying Home / Trending / Subscriptions / Inbox / Library.
+   Trending and Inbox no longer exist anywhere in YouTube's markup, so they
+   cannot be restored here — CSS can only restyle what still ships.
    ========================================================================== */
 
 ytm-pivot-bar-renderer,
+ytm-pivot-bar-renderer.frosted-glass,
 .pivot-bar {
   background: var(--ot-bg) !important;
   border-top: 1px solid var(--ot-line) !important;
   box-shadow: none !important;
+  /* The 2016 bar was opaque; frosted glass is a 2023 affectation. */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 ytm-pivot-bar-item-renderer,
 .pivot-bar-item-tab {
   color: var(--ot-text-dim) !important;
+  background: transparent !important;
 }
 
-.pivot-bar-item-title,
-ytm-pivot-bar-item-renderer .pivot-bar-item-title {
+.pivot-bar-item-title {
   font-size: 10px !important;
   font-weight: 400 !important;
   letter-spacing: 0 !important;
@@ -221,21 +269,25 @@ ytm-pivot-bar-item-renderer .pivot-bar-item-title {
 ytm-pivot-bar-item-renderer[is-selected],
 ytm-pivot-bar-item-renderer[selected],
 .pivot-bar-item-tab[aria-selected="true"],
-.pivot-bar-item-tab.is-active {
+.pivot-bar-item-tab.is-active,
+.pivot-bar-item-tab[is-active] {
   color: var(--ot-red) !important;
   background: transparent !important;
 }
 
 ytm-pivot-bar-item-renderer[is-selected] svg,
-.pivot-bar-item-tab[aria-selected="true"] svg {
+.pivot-bar-item-tab[aria-selected="true"] svg,
+.pivot-bar-item-tab[is-active] svg {
   fill: var(--ot-red) !important;
 }
 
-/* Tabs that didn't exist in 2016. */
+/* Tabs that didn't exist in 2016. YouTube names these `.shorts` and
+   `.create` on the tab element itself. */
+.pivot-bar-item-tab.shorts,
+.pivot-bar-item-tab.create,
+.pivot-bar-item-title.shorts,
 .pivot-shorts,
-.pivot-create,
-ytm-pivot-bar-item-renderer.pivot-shorts,
-ytm-pivot-bar-item-renderer.pivot-create {
+.pivot-create {
   display: none !important;
 }
 
@@ -266,21 +318,18 @@ ytm-rich-item-renderer:has(a[href^="/shorts"]) {
   display: none !important;
 }
 
-/* Post-2018 feed furniture: hype/clip/thanks/membership shelves, "Breaking
-   news", mixes-as-cards, and the AI blurbs. */
+/* Post-2018 feed furniture: promo shelves, surveys, prompts, ad slots. */
 ytm-emergency-onebox-renderer,
 ytm-clip-creation-renderer,
 ytm-info-panel-container-renderer,
 ytm-brand-video-shelf-renderer,
 ytm-companion-slot-renderer,
-ytm-carousel-header-renderer,
 ytm-statement-banner-renderer,
 ytm-promoted-video-renderer,
 ytm-promoted-sparkles-web-renderer,
 ytm-compact-promoted-video-renderer,
 ytm-primetime-promo-renderer,
 [class*="ad-slot"],
-[class*="-ad-"],
 ytm-inline-survey-renderer,
 ytm-notification-permission-prompt-renderer {
   display: none !important;
@@ -291,9 +340,10 @@ ytm-notification-permission-prompt-renderer {
    ========================================================================== */
 
 ytm-video-with-context-renderer,
+ytm-video-with-context-renderer.item,
 ytm-compact-video-renderer,
 ytm-rich-item-renderer,
-yt-lockup-view-model,
+ytm-media-item,
 .media-item {
   background: var(--ot-bg) !important;
   border-bottom: 1px solid var(--ot-line) !important;
@@ -302,26 +352,29 @@ yt-lockup-view-model,
 }
 
 .media-item-thumbnail-container,
-yt-thumbnail-view-model,
-ytm-thumbnail-cover {
+ytm-thumbnail-cover,
+ytm-thumbnail-cover.rounded-thumbnail,
+.video-thumbnail-container-large,
+yt-thumbnail-view-model {
   border-radius: 0 !important;
   margin: 0 !important;
   overflow: hidden !important;
 }
 
 .media-item-thumbnail-container img,
-yt-thumbnail-view-model img,
+.video-thumbnail-img,
+img.ytCoreImageHost,
 .media-item-thumbnail-container .yt-core-image {
   border-radius: 0 !important;
   width: 100% !important;
 }
 
-/* Title: 14px, two lines, near-black — not the heavier modern 16px. */
+/* Title: 14px, two lines, near-black — not the heavier modern treatment. */
+h3.media-item-headline,
 .media-item-headline,
+.media-item-headline .ytAttributedStringHost,
 .media-item-headline .yt-core-attributed-string,
-h3.media-item-headline span,
-yt-lockup-metadata-view-model h3,
-.yt-lockup-metadata-view-model-wiz__title {
+yt-lockup-metadata-view-model h3 {
   font-size: 14px !important;
   line-height: 19px !important;
   font-weight: 500 !important;
@@ -335,18 +388,26 @@ yt-lockup-metadata-view-model h3,
 }
 
 /* Byline + metadata: 12px grey, all on one line. */
+ytm-badge-and-byline-renderer,
+.YtmBadgeAndBylineRendererHost,
+.YtmBadgeAndBylineRendererItemByline,
+.YtmBadgeAndBylineRendererSeparator,
 .media-item-byline,
 .media-item-metadata-content,
-ytm-badge-and-byline-renderer,
-.yt-content-metadata-view-model-wiz__metadata-row,
-.yt-content-metadata-view-model-wiz__metadata-text {
+.yt-content-metadata-view-model-wiz__metadata-row {
   font-size: 12px !important;
   line-height: 16px !important;
   font-weight: 400 !important;
   color: var(--ot-text-dim) !important;
 }
 
-.media-item-metadata {
+.media-item-metadata,
+.media-item-info {
+  padding: 0 !important;
+}
+
+.media-item-details,
+.media-channel {
   padding: 8px 12px 0 !important;
 }
 
@@ -373,7 +434,7 @@ ytm-slim-video-metadata-section-renderer,
 }
 
 .slim-video-information-title,
-.slim-video-information-title .yt-core-attributed-string,
+.slim-video-information-title .ytAttributedStringHost,
 ytm-slim-video-information-renderer h1 {
   font-size: 16px !important;
   line-height: 22px !important;
@@ -382,7 +443,6 @@ ytm-slim-video-information-renderer h1 {
 }
 
 .slim-video-information-views,
-.slim-video-metadata-title-modern-metadata,
 ytm-factoid-renderer {
   font-size: 13px !important;
   color: var(--ot-text-dim) !important;
@@ -413,7 +473,7 @@ ytm-button-renderer button {
 
 /* Segmented like/dislike control: no capsule, no divider pill. */
 segmented-like-dislike-button-view-model,
-.YtSegmentedLikeDislikeButtonViewModelHost,
+[class*="SegmentedLikeDislikeButton"],
 like-button-view-model,
 dislike-button-view-model {
   background: transparent !important;
@@ -423,7 +483,8 @@ dislike-button-view-model {
 /* Subscribe: the flat red rectangle, not a black pill. */
 ytm-subscribe-button-renderer button,
 button[aria-label*="Subscribe"],
-.subscribe-button-renderer button {
+[class*="AnimatedSubscribeButton"] button,
+.ytwAnimatedSubscribeButtonContentContainer {
   background: var(--ot-red) !important;
   color: #ffffff !important;
   border: none !important;
@@ -462,6 +523,8 @@ ytm-engagement-panel-section-list-renderer,
    8. Buttons and search, everywhere else
    ========================================================================== */
 
+button.ytSpecButtonShapeNextHost,
+[class*="ytSpecButtonShapeNext"],
 .yt-spec-button-shape-next--filled,
 .yt-spec-button-shape-next--tonal,
 yt-button-shape button {
@@ -490,7 +553,7 @@ yt-page-header-view-model {
   background: var(--ot-bg) !important;
 }
 
-/* Scrim/overlay tweaks so nothing modern peeks through. */
+/* Sheets and menus. */
 ytm-sheet-renderer,
 .dialog-container,
 ytm-menu-renderer {
