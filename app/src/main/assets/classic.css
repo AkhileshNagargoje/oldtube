@@ -28,12 +28,29 @@
 html,
 html[dark],
 html[darker-dark-theme] {
-  /* --- the one switch worth knowing about ------------------------------
-     This is the 2016 Android-app look: red app bar, white content. For the
-     2017+ web look instead, set --ot-bar to #fff and --ot-bar-fg to #030303.
-     The logo follows along on its own.                                      */
-  --ot-bar: #e62117;
-  --ot-bar-fg: #ffffff;
+  /* --- the app bar, and the one switch worth knowing about --------------
+     Currently the 2017 look: white bar, dark icons, the You[Tube] wordmark in
+     its normal colours. To go back to the 2016 Android-app look (red bar,
+     everything on it reversed out in white), swap in these six values:
+
+         --ot-bar:          #e62117;
+         --ot-bar-fg:       #ffffff;
+         --ot-bar-dim:      rgba(255, 255, 255, 0.75);
+         --ot-bar-field:    rgba(0, 0, 0, 0.12);
+         --ot-logo-box-bg:  #ffffff;
+         --ot-logo-box-fg:  #e62117;
+
+     The logo needs its own three variables rather than borrowing the bar's:
+     on a red bar the "Tube" box is white-on-red, on a white bar it's the
+     reverse. Deriving it from --ot-bar alone gives a black box on white. */
+  --ot-bar: #ffffff;
+  --ot-bar-fg: #030303;
+  --ot-bar-dim: #606060;
+  --ot-bar-field: #f2f2f2;
+
+  --ot-logo-text: #282828;
+  --ot-logo-box-bg: #cc181e;
+  --ot-logo-box-fg: #ffffff;
 
   --ot-red: #e62117;
   --ot-text: #030303;
@@ -179,8 +196,10 @@ ytm-mobile-topbar-renderer,
 ytm-searchbox-header-renderer,
 .searchbox-header {
   background: var(--ot-bar) !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25) !important;
-  border-bottom: none !important;
+  /* Light enough to read as a hairline on a white bar, still present enough
+     to lift a red one off the content below. */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12) !important;
+  border-bottom: 1px solid var(--ot-line) !important;
 }
 
 /* Icons and text on the bar go white (or whatever --ot-bar-fg says). */
@@ -199,7 +218,7 @@ header.mobile-topbar-header .ytAttributedStringHost,
 
 .searchbox-header input::placeholder,
 .search-bar input::placeholder {
-  color: rgba(255, 255, 255, 0.75) !important;
+  color: var(--ot-bar-dim) !important;
 }
 
 /* --- the logo ----------------------------------------------------------
@@ -228,15 +247,15 @@ c3-icon#home-icon.mobile-topbar-logo {
 
 c3-icon.mobile-topbar-logo::before {
   content: "You";
-  color: var(--ot-bar-fg);
+  color: var(--ot-logo-text);
   font: 700 20px/1 Roboto, Arial, sans-serif;
   letter-spacing: -0.5px;
 }
 
 c3-icon.mobile-topbar-logo::after {
   content: "Tube";
-  color: var(--ot-bar);
-  background: var(--ot-bar-fg);
+  color: var(--ot-logo-box-fg);
+  background: var(--ot-logo-box-bg);
   font: 700 20px/1 Roboto, Arial, sans-serif;
   letter-spacing: -0.5px;
   padding: 3px 4px 4px;
@@ -244,9 +263,9 @@ c3-icon.mobile-topbar-logo::after {
   border-radius: 3px !important;
 }
 
-/* Search field sitting in the red bar: flat, translucent, square. */
+/* Search field sitting in the app bar: flat and square. */
 .search-bar {
-  background: rgba(0, 0, 0, 0.12) !important;
+  background: var(--ot-bar-field) !important;
   border: none !important;
 }
 
@@ -547,6 +566,8 @@ ytm-subscribe-button-renderer *,
 [class*="AnimatedAction"] * {
   background: transparent !important;
   background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
   border-radius: 0 !important;
   box-shadow: none !important;
 }
