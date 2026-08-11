@@ -65,5 +65,26 @@ and the personalised home feed, since no public API exposes them.
 **It will drift.** YouTube ships markup changes continuously. Expect to touch
 the CSS occasionally.
 
-Personal use. Don't ship it — redistributing a YouTube client breaks YouTube's
-terms, and the Play Store will reject it.
+## Contributing
+
+Issues and pull requests are welcome. The thing worth knowing before you touch
+`classic.css`: don't guess at selectors. YouTube's element names drift, and the
+same names are mid-migration from kebab-case to camelCase with A/B tests
+serving both. Read the live DOM instead — debug builds enable WebView contents
+debugging, so `chrome://inspect` in desktop Chrome attaches to the running app
+and gives you real devtools against the real page.
+
+Two bugs in this repo's history came from ignoring that, and both are the same
+shape: a selector that looked thumbnail-specific (`img.ytCoreImageHost`,
+`width: 100%`) but matched every image on the page. Check what a rule actually
+hits before shipping it, and remember that ties on specificity are broken by
+document order.
+
+## Licence
+
+MIT — see [LICENSE](LICENSE). Do what you like with this code.
+
+That covers the code in this repository, and nothing else. It is not a grant of
+any right to YouTube's service, content, or trade marks. Running a third-party
+client is between you and YouTube's terms of service: keep this to personal
+use, and be aware that the Play Store will reject an app like this one.
