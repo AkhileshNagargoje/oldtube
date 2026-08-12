@@ -646,9 +646,65 @@ ytm-slim-video-action-bar-renderer button[aria-label*="More actions"]::after {
   content: "More";
 }
 
-/* The "Ask" sparkle is a 2024 AI addition. */
-ytm-slim-video-action-bar-renderer button[aria-label="Ask"] {
+/* The "Ask" sparkle is a 2024 AI addition. The wrapper goes too — hiding only
+   the inner button leaves its flex item still holding a 40px gap. */
+ytm-slim-video-action-bar-renderer button[aria-label="Ask"],
+.slim-video-action-bar-actions > .you-chat-entrypoint-button {
   display: none !important;
+}
+
+/* --- two rows, as the 2016-17 app had them ----------------------------
+   Period screenshots put the action buttons on their own row, with the
+   channel and its Subscribe button on a separate row beneath. YouTube packs
+   all of it into a single nowrap flex line, so this re-orders the items and
+   forces a break between the two groups.
+
+   The break is a zero-height, full-width pseudo-element: as a flex item it
+   consumes the rest of the line, pushing everything after it onto the next
+   one. Its border-top doubles as the divider that sat between the rows. */
+
+/* The channel row is lifted out of flow rather than wrapped onto a second
+   line. Anything that stays in the flex line — a wider button, or a
+   full-width pseudo-element used as a line break — feeds into YouTube's fit
+   calculation and makes it silently stop rendering Dislike and Share. Absolute
+   positioning leaves the line measuring exactly as it did before, so all four
+   actions survive; the container just reserves height underneath for the row. */
+.slim-video-action-bar-actions {
+  position: relative !important;
+  padding-bottom: 78px !important;
+  /* Spread the icons across the row, as the period layout did. This only
+     distributes free space — it never changes an item's width, so YouTube's
+     fit calculation sees exactly what it saw before. */
+  justify-content: space-around !important;
+}
+
+/* YouTube gives the first action an auto left margin to push the group clear
+   of Subscribe. With Subscribe lifted out of flow that margin pins everything
+   to the right edge, so drop it. */
+.slim-video-action-bar-actions > like-button-view-model {
+  margin-left: 0 !important;
+}
+
+.slim-video-action-bar-actions > a.slim-video-owner-icon {
+  position: absolute !important;
+  left: 0 !important;
+  bottom: 10px !important;
+}
+
+.slim-video-action-bar-actions > div.slim-subscribe-button {
+  position: absolute !important;
+  left: 60px !important;
+  bottom: 10px !important;
+}
+
+/* Divider between the two rows — also absolute, for the same reason. */
+.slim-video-action-bar-actions::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 66px;
+  border-top: 1px solid var(--ot-line);
 }
 
 /* Comments preview arrives as a rounded grey card; 2016 had a plain section
