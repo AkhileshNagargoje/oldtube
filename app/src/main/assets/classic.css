@@ -826,3 +826,142 @@ ytm-menu-renderer {
   border-radius: 0 !important;
   background: var(--ot-bg) !important;
 }
+
+/* ==========================================================================
+   9. Library — the "You" tab
+
+   2016's Library was a plain vertical list: History, playlists by name, then
+   a few link rows. Modern YouTube ships the same content as horizontal
+   scrolling card shelves, so the work here is unwinding those shelves back
+   into a list rather than recolouring anything.
+
+   Note there is no Trending page to match the period screenshots with —
+   requesting /feed/trending redirects to the home feed. Offline downloads
+   are likewise a native-app feature with no markup on mobile web.
+   ========================================================================== */
+
+.horizontal-card-list-container {
+  padding: 0 !important;
+}
+
+/* Stop the sideways scroll and let the cards stack. */
+.horizontal-card-list-cards {
+  overflow-x: visible !important;
+  white-space: normal !important;
+  display: block !important;
+  height: auto !important;
+  padding: 0 !important;
+}
+
+/* Each card becomes a full-width row. border-box matters: these are
+   content-box by default, so padding would push them past the viewport. */
+.horizontal-card-list-card {
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 8px 12px !important;
+  border-bottom: 1px solid var(--ot-line) !important;
+  border-radius: 0 !important;
+}
+
+.horizontal-card-list-card * {
+  box-sizing: border-box !important;
+}
+
+/* Thumbnail box on the left. Every nested layer has to be clamped too — the
+   inner ytm-compact-thumbnail is 160x90 and will spill straight over the
+   title if only the outer anchor is resized. */
+.video-card-image,
+.playlist-card-image {
+  flex: 0 0 100px !important;
+  width: 100px !important;
+  height: 56px !important;
+  min-width: 0 !important;
+  margin: 0 12px 0 0 !important;
+  overflow: hidden !important;
+  position: relative !important;
+  border-radius: 0 !important;
+}
+
+.horizontal-card-list-card ytm-compact-thumbnail,
+.horizontal-card-list-card yt-collections-stack,
+.horizontal-card-list-card .video-thumbnail-img,
+.horizontal-card-list-card .video-thumbnail-bg,
+.horizontal-card-list-card img {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  left: 0 !important;
+  top: 0 !important;
+  border-radius: 0 !important;
+}
+
+/* Playlists were text-only rows in 2016 — no artwork. */
+.playlist-card-image {
+  display: none !important;
+}
+
+.playlist-card-metadata {
+  padding: 4px 0 !important;
+}
+
+.playlist-card-metadata,
+.video-card-metadata,
+.horizontal-card-list-card [class*="card-metadata"] {
+  flex: 1 1 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+}
+
+.playlist-card-title,
+.horizontal-card-list-card h4 {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: var(--ot-text) !important;
+}
+
+.playlist-card-subhead {
+  font-size: 12px !important;
+  color: var(--ot-text-dim) !important;
+}
+
+/* Shelf headers ("HISTORY", "PLAYLISTS") — small, grey, uppercase. */
+.ytm-rich-list-header-title {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  color: var(--ot-text-dim) !important;
+}
+
+.horizontal-card-list-top-container {
+  padding: 0 12px !important;
+  border-top: 1px solid var(--ot-line) !important;
+}
+
+/* "VIEW ALL" was a plain text link, not a bordered button. */
+.horizontal-card-list-button button,
+.horizontal-card-list-button a {
+  border: none !important;
+  background: transparent !important;
+  color: var(--ot-text-dim) !important;
+  padding: 0 !important;
+  font-size: 12px !important;
+}
+
+/* The link rows underneath: Your videos, Movies & TV, Help... */
+ytm-compact-link-renderer {
+  background: var(--ot-bg) !important;
+  border-bottom: 1px solid var(--ot-line) !important;
+}
+
+.YtmCompactLinkRendererTitle {
+  font-size: 15px !important;
+  color: var(--ot-text) !important;
+}
