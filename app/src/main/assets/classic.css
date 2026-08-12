@@ -28,29 +28,27 @@
 html,
 html[dark],
 html[darker-dark-theme] {
-  /* --- the app bar, and the one switch worth knowing about --------------
-     Currently the 2017 look: white bar, dark icons, the You[Tube] wordmark in
-     its normal colours. To go back to the 2016 Android-app look (red bar,
-     everything on it reversed out in white), swap in these six values:
+  /* --- the app bar ------------------------------------------------------
+     The 2016-17 Android app: red bar, everything on it reversed out in white,
+     and a plain white "YouTube" wordmark — not the two-tone You[Tube] box,
+     which is the web/desktop mark of that era, not the app's.
 
-         --ot-bar:          #e62117;
-         --ot-bar-fg:       #ffffff;
-         --ot-bar-dim:      rgba(255, 255, 255, 0.75);
-         --ot-bar-field:    rgba(0, 0, 0, 0.12);
-         --ot-logo-box-bg:  #ffffff;
-         --ot-logo-box-fg:  #e62117;
+     For the white web bar instead, swap these five values and set
+     --ot-logo-boxed to 1 further down:
 
-     The logo needs its own three variables rather than borrowing the bar's:
-     on a red bar the "Tube" box is white-on-red, on a white bar it's the
-     reverse. Deriving it from --ot-bar alone gives a black box on white. */
-  --ot-bar: #ffffff;
-  --ot-bar-fg: #030303;
-  --ot-bar-dim: #606060;
-  --ot-bar-field: #f2f2f2;
+         --ot-bar:       #ffffff;
+         --ot-bar-fg:    #030303;
+         --ot-bar-dim:   #606060;
+         --ot-bar-field: #f2f2f2;
+         --ot-logo-text: #282828;                                          */
+  --ot-bar: #e62117;
+  --ot-bar-fg: #ffffff;
+  --ot-bar-dim: rgba(255, 255, 255, 0.75);
+  --ot-bar-field: rgba(0, 0, 0, 0.12);
 
-  --ot-logo-text: #282828;
-  --ot-logo-box-bg: #cc181e;
-  --ot-logo-box-fg: #ffffff;
+  --ot-logo-text: #ffffff;
+  --ot-logo-box-bg: #ffffff;
+  --ot-logo-box-fg: #e62117;
 
   --ot-red: #e62117;
   --ot-text: #030303;
@@ -245,15 +243,18 @@ c3-icon#home-icon.mobile-topbar-logo {
   overflow: visible !important;
 }
 
+/* One plain wordmark, as the app showed it on the red bar. The boxed
+   You[Tube] mark below is the web logo of the same era — swap the two
+   `content` values to use it. */
 c3-icon.mobile-topbar-logo::before {
-  content: "You";
+  content: "YouTube";
   color: var(--ot-logo-text);
   font: 700 20px/1 Roboto, Arial, sans-serif;
   letter-spacing: -0.5px;
 }
 
 c3-icon.mobile-topbar-logo::after {
-  content: "Tube";
+  content: none; /* set to "Tube" (and ::before to "You") for the web mark */
   color: var(--ot-logo-box-fg);
   background: var(--ot-logo-box-bg);
   font: 700 20px/1 Roboto, Arial, sans-serif;

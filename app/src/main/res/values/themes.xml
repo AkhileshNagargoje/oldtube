@@ -3,10 +3,10 @@
     <!-- Light, chrome-less. 2016 YouTube had no dark mode, so neither do we. -->
     <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@android:color/white</item>
-        <!-- Matches the white 2017 app bar, a shade down so the bar still
-             reads as a separate surface. For the 2016 red bar instead, use
-             #CC181E with windowLightStatusBar false. -->
-        <item name="android:statusBarColor">#F1F1F1</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <!-- Darker shade of the red app bar, as the 2016-17 app had it. For
+             the white web bar instead, use #F1F1F1 with
+             windowLightStatusBar true. -->
+        <item name="android:statusBarColor">#CC181E</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>
