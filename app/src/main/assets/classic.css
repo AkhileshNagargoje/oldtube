@@ -354,6 +354,12 @@ grid-shelf-view-model,
 a[href^="/shorts"],
 ytm-item-section-renderer:has(ytm-reel-shelf-renderer),
 ytm-rich-item-renderer:has(a[href^="/shorts"]),
+/* Search results wrap a Short in an ordinary video card whose media item is
+   `.big-shorts-singleton`. Hiding just the inner link — which is what
+   `a[href^="/shorts"]` above does — leaves the card behind as a 93px blank
+   gap in the results, so the whole card has to go. */
+ytm-media-item.big-shorts-singleton,
+ytm-video-with-context-renderer:has(.big-shorts-singleton),
 /* Home ships Shorts and Playables as `ytm-rich-section-renderer` shelves.
    Matching on the links inside is what actually catches them — the earlier
    `:has(ytm-shorts-lockup-view-model)` never did. Real videos are
@@ -787,10 +793,14 @@ button[aria-label*="Subscribe"] {
   letter-spacing: 0.5px !important;
 }
 
-/* Already-subscribed state was grey text, no fill. */
+/* Already-subscribed state was grey text on no fill. The host carries
+   `.is-subscribed`, and without this the red fill above still applies while
+   the text turns grey — grey on red, which is both wrong and unreadable. */
+ytm-subscribe-button-renderer.is-subscribed .modern-subscribe-button,
 ytm-subscribe-button-renderer button[subscribed],
 button[aria-label*="Unsubscribe"] {
   background: transparent !important;
+  border: 1px solid var(--ot-line) !important;
   color: var(--ot-text-dim) !important;
 }
 
