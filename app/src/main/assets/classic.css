@@ -460,6 +460,19 @@ ytm-badge-and-byline-renderer,
   color: var(--ot-text-dim) !important;
 }
 
+/* "all on one line" needs enforcing, not just stating. Left to wrap, a long
+   byline ("Kalamkaar and 2 more • 1.5m views • 7 days ago") takes two lines
+   and the card grows by 16px — obvious on Subscriptions, where collaboration
+   credits are common. 2016 truncated instead. */
+ytm-badge-and-byline-renderer,
+.YtmBadgeAndBylineRendererHost {
+  display: block !important;
+  max-width: 100% !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
 .media-item-metadata,
 .media-item-info {
   padding: 0 !important;
@@ -491,6 +504,18 @@ ytm-compact-channel-renderer a.YtmCompactMediaItemImage {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+}
+
+/* Subscriptions: the strip of subscribed-channel avatars across the top. It
+   stays — the period app had one — but sits on white behind a hairline rather
+   than floating. Avatars are already circular via section 2. */
+ytm-channel-list-sub-menu-renderer {
+  background: var(--ot-bg) !important;
+  border-bottom: 1px solid var(--ot-line) !important;
+}
+
+.YtmChannelListSubMenuRendererAvatars {
+  padding: 6px 12px !important;
 }
 
 /* Section headers ("Recommended", "Trending") — small, grey, uppercase. */
