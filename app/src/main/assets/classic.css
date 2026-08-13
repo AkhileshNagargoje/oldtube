@@ -854,6 +854,61 @@ yt-page-header-view-model {
   background: var(--ot-bg) !important;
 }
 
+/* --- channel page ------------------------------------------------------
+   2016 ran the banner edge to edge. Modern YouTube insets the whole header
+   by 16px and rounds the banner into a card; the inset is padding on
+   yt-page-header-view-model, so it moves to the headline instead, keeping
+   the name and avatar off the edge while the banner goes full-bleed. */
+yt-page-header-view-model.ytPageHeaderViewModelHost {
+  padding: 0 !important;
+}
+
+.ytPageHeaderViewModelContent,
+.ytPageHeaderViewModelBannerContainer {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+yt-image-banner-view-model,
+.ytImageBannerViewModelInset {
+  border-radius: 0 !important;
+  margin: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+}
+
+.ytPageHeaderViewModelHeadline {
+  padding: 12px !important;
+}
+
+/* Tab bar: uppercase labels with a red underline marking the selected one,
+   which is how the period app showed it — never a filled pill. */
+.tabGroupShapeTabs {
+  background: var(--ot-bg) !important;
+  border-bottom: 1px solid var(--ot-line) !important;
+}
+
+.ytTabShapeTab {
+  text-transform: uppercase !important;
+  font-size: 12px !important;
+  letter-spacing: 0.5px !important;
+  color: var(--ot-text-dim) !important;
+  border-radius: 0 !important;
+  padding: 12px 14px !important;
+}
+
+yt-tab-shape[aria-selected="true"] .ytTabShapeTab,
+.ytTabShapeTabSelected {
+  color: var(--ot-red) !important;
+  border-bottom: 2px solid var(--ot-red) !important;
+}
+
+/* No Shorts tab in 2016. Each tab carries a `tab-title` attribute, which is
+   the only stable handle on an individual tab — they share every class. */
+yt-tab-shape[tab-title="Shorts"] {
+  display: none !important;
+}
+
 /* Sheets and menus. */
 ytm-sheet-renderer,
 .dialog-container,
