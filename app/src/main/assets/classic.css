@@ -771,19 +771,32 @@ ytm-compact-thumbnail img,
 /* Title: 14px, two lines, near-black — not the heavier modern treatment. */
 h3.media-item-headline,
 .media-item-headline,
-.media-item-headline .ytAttributedStringHost,
-.media-item-headline .yt-core-attributed-string,
 yt-lockup-metadata-view-model h3 {
   font-size: 14px !important;
   line-height: 19px !important;
   font-weight: 500 !important;
   color: var(--ot-text) !important;
   letter-spacing: 0 !important;
-  max-height: 38px !important;
   overflow: hidden !important;
   display: -webkit-box !important;
   -webkit-line-clamp: 2 !important;
   -webkit-box-orient: vertical !important;
+}
+
+/* Same reasoning as the watch title: the inner span takes the type but not
+   the clamp, and no max-height. Feed titles are full of emoji, whose line
+   boxes run taller than the line-height a fixed max-height is sized from. */
+.media-item-headline .ytAttributedStringHost,
+.media-item-headline .yt-core-attributed-string {
+  font-size: 14px !important;
+  line-height: 19px !important;
+  font-weight: 500 !important;
+  color: var(--ot-text) !important;
+  letter-spacing: 0 !important;
+  display: inline !important;
+  max-height: none !important;
+  overflow: visible !important;
+  -webkit-line-clamp: none !important;
 }
 
 /* Byline + metadata: 12px grey, all on one line. */
@@ -887,7 +900,6 @@ ytm-slim-video-metadata-section-renderer,
    (`.title-overflow`); 2016 wrapped and showed the whole thing. */
 h2.slim-video-information-title,
 .slim-video-information-title,
-.slim-video-information-title .ytAttributedStringHost,
 ytm-slim-video-information-renderer h1 {
   font-size: 16px !important;
   line-height: 22px !important;
@@ -899,7 +911,23 @@ ytm-slim-video-information-renderer h1 {
   overflow: hidden !important;
   white-space: normal !important;
   text-overflow: clip !important;
-  max-height: 44px !important;
+}
+
+/* The inner span takes the type but not the clamp. Two nested -webkit-box
+   contexts each clamping to 2 lines is what cut this title in half: the
+   emoji in it makes its line boxes taller than the 22px line-height, so a
+   `max-height: 44px` sized for two plain lines could no longer hold two real
+   ones. Height is left to the line-clamp, which counts lines rather than
+   assuming what they measure. */
+.slim-video-information-title .ytAttributedStringHost {
+  font-size: 16px !important;
+  line-height: 22px !important;
+  font-weight: 500 !important;
+  color: var(--ot-text) !important;
+  display: inline !important;
+  max-height: none !important;
+  overflow: visible !important;
+  -webkit-line-clamp: none !important;
 }
 
 .slim-video-information-subtitle,
