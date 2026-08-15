@@ -174,8 +174,9 @@ class MainActivity : ComponentActivity() {
      */
     @Suppress("DEPRECATION")
     private fun applySystemBars() {
-        val dark = currentTheme() == "dark"
-        window.statusBarColor = if (dark) 0xFF212121.toInt() else 0xFFCC181E.toInt()
+        // Same in both themes: the app bar stays red in dark mode, so the
+        // status bar above it does too.
+        window.statusBarColor = 0xFFCC181E.toInt()
     }
 
     private inner class SkinningWebViewClient : WebViewClient() {

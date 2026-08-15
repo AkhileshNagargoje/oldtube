@@ -103,14 +103,19 @@ html[darker-dark-theme] {
    `:root[...]` is (0,2,0) and beats the `html[dark]` in the light palette
    above at (0,1,1), so these win regardless of order.               */
 :root[data-oldtube-theme="dark"] {
-  --ot-bar: #212121;
+  /* The bar stays red. 2018's dark theme greyed it to #212121, but the red
+     app bar is the whole identity of this skin — a dark grey bar reads as
+     modern YouTube immediately. Dark page, 2016 bar. For the faithful 2018
+     dark theme instead, set --ot-bar to #212121 and the status bar in
+     MainActivity.applySystemBars to match. */
+  --ot-bar: #e62117;
   --ot-bar-fg: #ffffff;
-  --ot-bar-dim: rgba(255, 255, 255, 0.7);
-  --ot-bar-field: rgba(255, 255, 255, 0.1);
+  --ot-bar-dim: rgba(255, 255, 255, 0.75);
+  --ot-bar-field: rgba(0, 0, 0, 0.2);
 
   --ot-logo-text: #ffffff;
   --ot-logo-box-bg: #ffffff;
-  --ot-logo-box-fg: #212121;
+  --ot-logo-box-fg: #e62117;
 
   --ot-red: #ff0000;
   --ot-text: #ffffff;
