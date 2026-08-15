@@ -383,8 +383,36 @@ ytm-compact-promoted-video-renderer,
 ytm-primetime-promo-renderer,
 [class*="ad-slot"],
 ytm-inline-survey-renderer,
-ytm-notification-permission-prompt-renderer {
+ytm-notification-permission-prompt-renderer,
+/* Memberships, Super Thanks and Clip are all post-2016 monetisation UI. */
+[class*="sponsor"],
+[class*="Sponsor"],
+[class*="SuperThanks"],
+[class*="super-thanks"],
+[class*="Membership"],
+/* The ambient glow that bleeds the video's colours around the player is a
+   2022 feature. 2016 sat the player on flat black. */
+#player-cinematics-container,
+.player-cinematics {
   display: none !important;
+}
+
+/* Metadata badges — 4K, Auto-dubbed, New — are all later additions. The
+   duration badge is the one 2016 had, and it is the only one that carries a
+   `Thumbnail` class, which is what separates them. */
+badge-shape:not([class*="Thumbnail"]) {
+  display: none !important;
+}
+
+/* Player chrome: square the popups and menus. The scrubber knob is
+   deliberately left alone — it was round then too. */
+.ytp-unmute,
+.ytp-unmute-box,
+.ytp-unmute-icon,
+.ytp-popup,
+.ytp-panel,
+.ytp-menu {
+  border-radius: 0 !important;
 }
 
 /* ==========================================================================
