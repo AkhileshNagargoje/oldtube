@@ -28,11 +28,56 @@
     return;
   }
 
+  /**
+   * The period tab bar had four entries; YouTube now ships three. Trending is
+   * gone for good — /feed/trending and /feed/explore both redirect to the home
+   * feed — so the empty slot gets History instead, which still exists and in
+   * 2017 lived inside Library.
+   *
+   * This is a real anchor to a real page, not a decorative stand-in. It is
+   * rebuilt whenever YouTube re-renders the bar, which it does on navigation.
+   */
+  function addHistoryTab() {
+    try {
+      var bar = document.querySelector("ytm-pivot-bar-renderer");
+      if (!bar || bar.querySelector(".oldtube-tab")) return;
+
+      // Each tab sits in its own `ytm-pivot-bar-item-renderer`, and those
+      // renderers — not the tabs — are the bar's children. Inserting relative
+      // to a tab throws, because the reference node belongs to a different
+      // parent. Position against the renderers instead.
+      var slots = bar.querySelectorAll("ytm-pivot-bar-item-renderer");
+      if (slots.length < 2) return; // bar not built yet
+
+      var tab = document.createElement("a");
+      tab.className = "pivot-bar-item-tab oldtube-tab";
+      tab.setAttribute("role", "tab");
+      tab.setAttribute("href", "/feed/history");
+      tab.setAttribute(
+        "aria-selected",
+        location.pathname === "/feed/history" ? "true" : "false"
+      );
+
+      var title = document.createElement("div");
+      title.className = "pivot-bar-item-title";
+      title.textContent = "History";
+      tab.appendChild(title);
+
+      // Second slot, where Trending sat.
+      bar.insertBefore(tab, slots[1]);
+    } catch (e) {
+      // Never let a DOM change here stop the stylesheet from being applied —
+      // this runs at the top of apply().
+    }
+  }
+
   var skin = {
     css: CSS,
     theme: THEME,
 
     apply: function () {
+      addHistoryTab();
+
       // The dark palette keys off this attribute. Re-stamped alongside the
       // stylesheet because YouTube rewrites <html>'s attributes on some
       // navigations and would otherwise drop it.
@@ -87,5 +132,38 @@
       }
     });
     wait.observe(document.documentElement, { childList: true, subtree: true });
+  }
+
+  /**
+   * The stylesheet only needs <head>, but the History tab lives in the body and
+   * YouTube rebuilds the pivot bar on navigation, dropping it. This watches the
+   * body for that.
+   *
+   * The body mutates constantly, so the work is coalesced to once a frame and
+   * addHistoryTab bails on a single querySelector when the tab is already
+   * there — which is the overwhelmingly common case.
+   */
+  var tabQueued = false;
+  function watchBody() {
+    if (!document.body) return false;
+    new MutationObserver(function () {
+      if (tabQueued) return;
+      tabQueued = true;
+      requestAnimationFrame(function () {
+        tabQueued = false;
+        addHistoryTab();
+      });
+    }).observe(document.body, { childList: true, subtree: true });
+    return true;
+  }
+
+  if (!watchBody()) {
+    var waitBody = new MutationObserver(function () {
+      if (watchBody()) {
+        waitBody.disconnect();
+        addHistoryTab();
+      }
+    });
+    waitBody.observe(document.documentElement, { childList: true, subtree: true });
   }
 })();

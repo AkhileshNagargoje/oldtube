@@ -58,6 +58,12 @@ html[darker-dark-theme] {
   --ot-line: #e2e2e2;
   --ot-bg: #ffffff;
 
+  /* Tab-bar icons for the two entries YouTube no longer draws for us: a clock
+     for the injected History tab, a folder for Library. Material shapes of the
+     period, inlined as masks so they take currentColor. */
+  --ot-icon-history: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 3a9 9 0 00-9 9H1l3.9 3.9.1.1L9 12H6a7 7 0 117 7 6.9 6.9 0 01-4.9-2L6.7 18.4A9 9 0 1013 3zm-1 5v5l4.3 2.5.7-1.2-3.5-2.1V8z"/></svg>');
+  --ot-icon-library: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8z"/></svg>');
+
   /* YouTube's own theme tokens, pinned to 2016 light. */
   --yt-spec-base-background: var(--ot-bg) !important;
   --yt-spec-raised-background: var(--ot-bg) !important;
@@ -443,6 +449,74 @@ ytm-pivot-bar-item-renderer[is-selected] svg,
      used for bylines. */
   color: #606060 !important;
   fill: #606060 !important;
+}
+
+/* --- restoring the four-tab bar ----------------------------------------
+   The reference bar reads Home / Trending / Subscriptions / Library. YouTube
+   ships Home / Subscriptions / You, so: inject.js adds a History tab in the
+   Trending slot, and the rules below relabel "You" as Library and give it the
+   period folder icon in place of the account avatar.
+
+   Icons are drawn as masks filled with currentColor, so they inherit the
+   selected-red / unselected-grey colouring above rather than needing their
+   own rules. */
+.pivot-bar-item-tab.oldtube-tab {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 1 1 0 !important;
+  text-decoration: none !important;
+  color: #606060 !important;
+  padding: 8px 0 !important;
+}
+
+.pivot-bar-item-tab.oldtube-tab[aria-selected="true"],
+.pivot-bar-item-tab.oldtube-tab[aria-selected="true"] .pivot-bar-item-title {
+  color: var(--ot-red) !important;
+}
+
+/* Clock, for History. */
+.pivot-bar-item-tab.oldtube-tab::before {
+  content: "";
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin-bottom: 4px;
+  background-color: currentColor;
+  -webkit-mask: var(--ot-icon-history) center / 24px 24px no-repeat;
+  mask: var(--ot-icon-history) center / 24px 24px no-repeat;
+}
+
+/* "You" becomes Library: hide the account avatar, draw a folder, and swap the
+   label. The text is a real node, so it is collapsed to zero and reprinted
+   rather than edited. */
+.pivot-bar-item-tab.pivot-you avatar-view-model,
+.pivot-bar-item-tab.pivot-you yt-avatar-shape,
+.pivot-bar-item-tab.pivot-you img {
+  display: none !important;
+}
+
+.pivot-bar-item-tab.pivot-you::before {
+  content: "";
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin-bottom: 4px;
+  background-color: currentColor;
+  -webkit-mask: var(--ot-icon-library) center / 24px 24px no-repeat;
+  mask: var(--ot-icon-library) center / 24px 24px no-repeat;
+}
+
+.pivot-bar-item-tab.pivot-you .pivot-bar-item-title {
+  font-size: 0 !important;
+}
+
+.pivot-bar-item-tab.pivot-you .pivot-bar-item-title::after {
+  content: "Library";
+  font-size: 10px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
 }
 
 /* Tabs that didn't exist in 2016. YouTube names these `.shorts` and
