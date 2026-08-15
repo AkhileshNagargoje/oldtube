@@ -881,6 +881,13 @@ yt-image-banner-view-model,
   padding: 12px !important;
 }
 
+/* Drop the @handle row, same reasoning as the watch page: handles arrived in
+   2022. It's the first metadata row; the subscriber and video counts sit in
+   the second and stay. */
+.ytPageHeaderViewModelContentMetadata .ytContentMetadataViewModelMetadataRow:first-child {
+  display: none !important;
+}
+
 /* Tab bar: uppercase labels with a red underline marking the selected one,
    which is how the period app showed it — never a filled pill. */
 .tabGroupShapeTabs {
