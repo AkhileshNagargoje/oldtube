@@ -205,6 +205,12 @@ ytm-searchbox-header-renderer,
   /* Light enough to read as a hairline on a white bar, still present enough
      to lift a red one off the content below. */
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12) !important;
+  border-bottom: none !important;
+}
+
+/* The renderer wraps the header, so bordering both lands two hairlines on the
+   same pixel row and reads as a 2px rule. Only the inner one draws it. */
+header.mobile-topbar-header {
   border-bottom: 1px solid var(--ot-line) !important;
 }
 
@@ -434,9 +440,22 @@ ytm-rich-item-renderer,
 ytm-media-item,
 .media-item {
   background: var(--ot-bg) !important;
-  border-bottom: 1px solid var(--ot-line) !important;
   padding: 0 0 10px !important;
   margin: 0 !important;
+}
+
+/* Only the outer card draws the separator. `ytm-media-item` sits inside
+   `ytm-video-with-context-renderer`, so bordering both put two hairlines
+   11px apart under every card in every feed. */
+ytm-video-with-context-renderer,
+ytm-compact-video-renderer,
+ytm-rich-item-renderer {
+  border-bottom: 1px solid var(--ot-line) !important;
+}
+
+ytm-media-item,
+.media-item {
+  border-bottom: none !important;
 }
 
 .media-item-thumbnail-container,
@@ -576,10 +595,13 @@ ytm-shelf-header-layout {
    7. Watch page
    ========================================================================== */
 
+/* No bottom border here — the action row directly beneath already draws one
+   above itself, and two rules meeting at the same boundary read as a double
+   rule. */
 ytm-slim-video-metadata-section-renderer,
 .slim-video-metadata-section {
   padding: 12px !important;
-  border-bottom: 1px solid var(--ot-line) !important;
+  border-bottom: none !important;
 }
 
 /* Title: two lines. YouTube ships it as a single truncated line
@@ -625,9 +647,22 @@ ytm-slim-video-action-bar-renderer,
 .slim-video-action-bar,
 .slim-video-action-bar-actions {
   background: var(--ot-bg) !important;
-  border-top: 1px solid var(--ot-line) !important;
-  border-bottom: 1px solid var(--ot-line) !important;
   padding: 4px 0 !important;
+}
+
+/* Exactly one rule draws each divider. Bordering both the renderer and the
+   actions div inside it stacks four hairlines around a single row, which is
+   how the watch page ended up with a ladder of lines. The action row needs
+   one above it; its own ::before separates the actions from the channel row
+   below. */
+ytm-slim-video-action-bar-renderer {
+  border-top: 1px solid var(--ot-line) !important;
+}
+
+.slim-video-action-bar,
+.slim-video-action-bar-actions {
+  border-top: none !important;
+  border-bottom: none !important;
 }
 
 .slim-video-action-bar-actions button,
@@ -776,12 +811,23 @@ ytm-slim-video-action-bar-renderer button[aria-label="Ask"],
 
 /* Comments preview arrives as a rounded grey card; 2016 had a plain section
    between hairlines. */
+/* Flatten every layer of the card, but border only the outermost one. The
+   inner pieces are all named `…MetadataCarousel…` too, so a wildcard border
+   here draws a hairline around each of them — four nested boxes, eight
+   lines. */
 yt-video-metadata-carousel-view-model,
 [class*="MetadataCarousel"] {
   border-radius: 0 !important;
   background: transparent !important;
+  border-top: none !important;
+  border-bottom: none !important;
+}
+
+/* Class selector, not the bare tag: `[class*="MetadataCarousel"]` above is
+   (0,1,0) and would outrank a plain element selector, leaving the card with
+   no top rule at all. */
+yt-video-metadata-carousel-view-model.ytVideoMetadataCarouselViewModelHost {
   border-top: 1px solid var(--ot-line) !important;
-  border-bottom: 1px solid var(--ot-line) !important;
 }
 
 /* The "OPEN APP" prompt in the top bar. Its link is the only intent:// URL
