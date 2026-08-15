@@ -25,6 +25,13 @@ private const val HOME = "https://m.youtube.com/"
 private const val TAG = "OldTube"
 
 /**
+ * Whether to follow the phone's dark mode. Off: 2016 YouTube had no dark
+ * theme, so the skin stays light regardless of the system setting. Set true
+ * to opt in — the dark palette in classic.css is complete and current.
+ */
+private const val FOLLOW_SYSTEM_DARK = false
+
+/**
  * Hosts that stay inside the app: YouTube itself, its asset CDNs, and the whole
  * Google sign-in flow.
  *
@@ -132,10 +139,15 @@ class MainActivity : ComponentActivity() {
 
     /**
      * "dark" when the phone is in dark mode, otherwise "light". The stylesheet
-     * keys its dark palette off this; there is no in-app switch, because the
-     * system toggle already is one.
+     * keys its dark palette off this.
+     *
+     * Held to light unless FOLLOW_SYSTEM_DARK is switched on: YouTube had no
+     * dark theme until 2018, so a dark page is the one thing this app can show
+     * that immediately reads as modern. The palette is kept and still correct —
+     * flip the flag to follow the phone's setting.
      */
     private fun currentTheme(): String {
+        if (!FOLLOW_SYSTEM_DARK) return "light"
         val night = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         return if (night == Configuration.UI_MODE_NIGHT_YES) "dark" else "light"
     }
