@@ -963,6 +963,20 @@ ytm-autocomplete-suggestion-renderer {
   border-bottom: 1px solid var(--ot-line) !important;
 }
 
+/* The query-builder arrow at the end of each row carries its own 5% black
+   tint, which reads as a grey column running down the side of the list. */
+.ytSuggestionComponentQueryBuilderButton {
+  background: transparent !important;
+}
+
+/* Modern YouTube dims the page behind the suggestions with a `c3-overlay` at
+   30% black. The list covers most of it, so what shows is a grey band across
+   the tab bar underneath. 2016 put suggestions on a plain white page with
+   nothing dimmed behind them. */
+c3-overlay {
+  background: transparent !important;
+}
+
 /* Channel page header: no giant rounded banner treatment. */
 ytm-channel-header-renderer,
 .channel-header,
