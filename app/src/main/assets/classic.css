@@ -855,6 +855,16 @@ ytm-slim-video-action-bar-renderer button[aria-label*="More actions"]::after {
   content: "More";
 }
 
+/* 2017's row was Like / Dislike / Share / Download / Add to, with no Report
+   button — YouTube serves one now, in place of the overflow. It is captioned
+   rather than hidden: captioning every icon in this row is the period
+   pattern, and removing a reporting control to gain a little accuracy is a
+   poor trade. Add it to the hide list above for a strict 2017 row. */
+ytm-slim-video-action-bar-renderer button[aria-label="Report"]::after,
+ytm-slim-video-action-bar-renderer button[aria-label*="Report"]::after {
+  content: "Report";
+}
+
 /* The "Ask" sparkle is a 2024 AI addition. The wrapper goes too — hiding only
    the inner button leaves its flex item still holding a 40px gap. */
 ytm-slim-video-action-bar-renderer button[aria-label="Ask"],
