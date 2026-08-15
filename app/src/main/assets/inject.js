@@ -16,20 +16,31 @@
   "use strict";
 
   var CSS = __CSS__;
+  var THEME = __THEME__;
   var ID = "oldtube-classic-skin";
 
   // A second injection on the same document: refresh the CSS and stop. The
   // observers from the first run are still live.
   if (window.__oldtubeSkin) {
     window.__oldtubeSkin.css = CSS;
+    window.__oldtubeSkin.theme = THEME;
     window.__oldtubeSkin.apply();
     return;
   }
 
   var skin = {
     css: CSS,
+    theme: THEME,
 
     apply: function () {
+      // The dark palette keys off this attribute. Re-stamped alongside the
+      // stylesheet because YouTube rewrites <html>'s attributes on some
+      // navigations and would otherwise drop it.
+      var root = document.documentElement;
+      if (root && root.getAttribute("data-oldtube-theme") !== skin.theme) {
+        root.setAttribute("data-oldtube-theme", skin.theme);
+      }
+
       var parent = document.head || document.documentElement;
       if (!parent) return;
 

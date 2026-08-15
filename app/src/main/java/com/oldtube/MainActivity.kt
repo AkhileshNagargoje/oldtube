@@ -3,6 +3,7 @@ package com.oldtube
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ApplicationInfo
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -94,6 +95,8 @@ class MainActivity : ComponentActivity() {
         web.webViewClient = SkinningWebViewClient()
         web.webChromeClient = FullscreenChromeClient()
 
+        applySystemBars()
+
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 when {
@@ -128,14 +131,51 @@ class MainActivity : ComponentActivity() {
         assets.open(name).bufferedReader().use { it.readText() }
 
     /**
+     * "dark" when the phone is in dark mode, otherwise "light". The stylesheet
+     * keys its dark palette off this; there is no in-app switch, because the
+     * system toggle already is one.
+     */
+    private fun currentTheme(): String {
+        val night = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        return if (night == Configuration.UI_MODE_NIGHT_YES) "dark" else "light"
+    }
+
+    /**
      * Injected at both page start and page finish. Start catches the first paint
      * so modern YouTube doesn't flash before the skin lands; finish covers the
      * case where <head> didn't exist yet at start.
      */
     private fun injectSkin() {
         val css = readAsset("classic.css")
-        val js = readAsset("inject.js").replace("__CSS__", JSONObject.quote(css))
+        val js = readAsset("inject.js")
+            .replace("__CSS__", JSONObject.quote(css))
+            .replace("__THEME__", JSONObject.quote(currentTheme()))
         web.evaluateJavascript(js, null)
+    }
+
+    /**
+     * The manifest lists `uiMode` in configChanges, so switching the phone's
+     * dark mode never recreates this activity — the theme has to be re-applied
+     * by hand or the page keeps the palette it started with.
+     */
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        applySystemBars()
+        injectSkin()
+    }
+
+    /**
+     * Status bar follows the app bar: 2016 red in light, #212121 in dark.
+     *
+     * `statusBarColor` is deprecated as of API 35, which draws edge-to-edge and
+     * ignores it. There is no replacement that paints a solid bar, and this app
+     * deliberately isn't edge-to-edge — a translucent status bar over a red app
+     * bar is not the 2016 look. On anything below 35 it still applies.
+     */
+    @Suppress("DEPRECATION")
+    private fun applySystemBars() {
+        val dark = currentTheme() == "dark"
+        window.statusBarColor = if (dark) 0xFF212121.toInt() else 0xFFCC181E.toInt()
     }
 
     private inner class SkinningWebViewClient : WebViewClient() {

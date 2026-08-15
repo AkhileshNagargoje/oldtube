@@ -91,6 +91,66 @@ html[darker-dark-theme] {
   color-scheme: light !important;
 }
 
+/* --- dark mode ---------------------------------------------------------
+   Off unless the phone is in dark mode; MainActivity stamps the attribute.
+
+   Worth knowing what this is: YouTube had no dark theme in 2016. It arrived
+   on desktop in May 2017 and on Android only in July 2018, so this is a
+   2018-era addition bolted onto a 2016 skin, not part of it. The values are
+   YouTube's own dark palette from that period — #181818 page, #212121 raised
+   — rather than the near-black it uses today.
+
+   `:root[...]` is (0,2,0) and beats the `html[dark]` in the light palette
+   above at (0,1,1), so these win regardless of order.               */
+:root[data-oldtube-theme="dark"] {
+  --ot-bar: #212121;
+  --ot-bar-fg: #ffffff;
+  --ot-bar-dim: rgba(255, 255, 255, 0.7);
+  --ot-bar-field: rgba(255, 255, 255, 0.1);
+
+  --ot-logo-text: #ffffff;
+  --ot-logo-box-bg: #ffffff;
+  --ot-logo-box-fg: #212121;
+
+  --ot-red: #ff0000;
+  --ot-text: #ffffff;
+  --ot-text-dim: #aaaaaa;
+  --ot-line: #303030;
+  --ot-bg: #181818;
+
+  --yt-spec-base-background: #181818 !important;
+  --yt-spec-raised-background: #212121 !important;
+  --yt-spec-menu-background: #212121 !important;
+  --yt-spec-general-background-a: #181818 !important;
+  --yt-spec-general-background-b: #181818 !important;
+  --yt-spec-general-background-c: #181818 !important;
+  --yt-spec-brand-background-primary: #181818 !important;
+  --yt-spec-brand-background-secondary: #212121 !important;
+  --yt-spec-brand-background-solid: #181818 !important;
+  --yt-spec-additive-background: rgba(255, 255, 255, 0.05) !important;
+  --yt-spec-inverted-background: #ffffff !important;
+
+  --yt-spec-text-primary: #ffffff !important;
+  --yt-spec-text-primary-inverse: #030303 !important;
+  --yt-spec-text-secondary: #aaaaaa !important;
+  --yt-spec-text-disabled: #717171 !important;
+  --yt-spec-call-to-action: #3ea6ff !important;
+  --yt-spec-call-to-action-inverse: #065fd4 !important;
+
+  --yt-spec-icon-active-other: #aaaaaa !important;
+  --yt-spec-icon-inactive: #717171 !important;
+  --yt-spec-icon-disabled: #717171 !important;
+
+  --yt-spec-10-percent-layer: rgba(255, 255, 255, 0.1) !important;
+  --yt-spec-outline: #303030 !important;
+
+  --yt-spec-static-brand-red: #ff0000 !important;
+  --yt-spec-brand-button-background: #ff0000 !important;
+  --yt-brand-medium-red: #ff0000 !important;
+
+  color-scheme: dark !important;
+}
+
 html,
 body {
   background: var(--ot-bg) !important;
