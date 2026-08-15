@@ -151,6 +151,29 @@ html[darker-dark-theme] {
   color-scheme: dark !important;
 }
 
+/* Recolouring the `--yt-spec-*` palette is not enough on its own. YouTube
+   hardcodes #0f0f0f on some text containers — `.ytLockupMetadataViewModelTitle`
+   and `.pivot-bar-item-title` among them — so those stayed near-black on a
+   near-black page and the feed was unreadable.
+
+   The attributed-string spans inside them inherit rather than carry their own
+   colour, so fixing the containers is what actually fixes the text. */
+:root[data-oldtube-theme="dark"] h1,
+:root[data-oldtube-theme="dark"] h2,
+:root[data-oldtube-theme="dark"] h3,
+:root[data-oldtube-theme="dark"] h4,
+:root[data-oldtube-theme="dark"] [class*="Title"],
+:root[data-oldtube-theme="dark"] [class*="title"],
+:root[data-oldtube-theme="dark"] [class*="Headline"],
+:root[data-oldtube-theme="dark"] [class*="headline"] {
+  color: var(--ot-text) !important;
+}
+
+:root[data-oldtube-theme="dark"] .ytAttributedStringHost,
+:root[data-oldtube-theme="dark"] [class*="AttributedString"] {
+  color: inherit !important;
+}
+
 html,
 body {
   background: var(--ot-bg) !important;
