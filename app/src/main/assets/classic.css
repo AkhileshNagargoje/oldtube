@@ -1014,11 +1014,31 @@ yt-tab-shape[tab-title="Shorts"] {
 }
 
 /* Sheets and menus. */
-ytm-sheet-renderer,
-.dialog-container,
-ytm-menu-renderer {
+ytm-sheet-renderer {
   border-radius: 0 !important;
   background: var(--ot-bg) !important;
+}
+
+ytm-menu-renderer,
+.dialog-container {
+  border-radius: 0 !important;
+}
+
+/* `.dialog-container` is the full-screen fixed layer that centres a dialog,
+   not the dialog itself. Giving it a background paints an opaque panel over
+   the whole page and buries the scrim behind it — which is what made the
+   unsubscribe prompt look broken. It stays transparent; only the dialog
+   inside it gets a surface. */
+.dialog-container {
+  background: transparent !important;
+}
+
+dialog.dialog,
+.modern-dialog,
+dialog-layout,
+[class*="DialogLayout"] {
+  background: var(--ot-bg) !important;
+  border-radius: 0 !important;
 }
 
 /* ==========================================================================
