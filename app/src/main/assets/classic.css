@@ -72,6 +72,15 @@ html[darker-dark-theme] {
   --ot-icon-library: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>');
   --ot-icon-trending: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/></svg>');
 
+  /* Watch-page action row. 2017 used solid fills; YouTube draws these as
+     outlines now, which is the difference you see under the player. */
+  --ot-icon-like: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91z"/></svg>');
+  --ot-icon-dislike: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v1.91l.01.01L1 14c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>');
+  --ot-icon-share: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 11l-8-8v4.5C5.5 8.5 2 14 2 21c2.5-4.5 6.5-6 11-6v4.5l8-8z"/></svg>');
+  --ot-icon-save: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 10H2v2h12v-2zm0-4H2v2h12V6zm4 8v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM2 16h8v-2H2v2z"/></svg>');
+  --ot-icon-more: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>');
+  --ot-icon-report: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>');
+
   /* YouTube's own theme tokens, pinned to 2016 light. */
   --yt-spec-base-background: var(--ot-bg) !important;
   --yt-spec-raised-background: var(--ot-bg) !important;
@@ -1026,6 +1035,84 @@ ytm-slim-video-action-bar-renderer button[aria-label*="More actions"]::after {
 ytm-slim-video-action-bar-renderer button[aria-label="Report"]::after,
 ytm-slim-video-action-bar-renderer button[aria-label*="Report"]::after {
   content: "Report";
+}
+
+/* --- action row icons ---------------------------------------------------
+   2017 drew these as solid fills; YouTube uses outlines now. The originals
+   are faded rather than removed and the period shape is laid over the top
+   absolutely, so the button's content box never changes size — resizing
+   anything in this row is what made YouTube stop rendering Share earlier. */
+ytm-slim-video-action-bar-renderer
+  button[aria-label]:not([aria-label*="ubscribe"]) svg,
+ytm-slim-video-action-bar-renderer
+  button[aria-label]:not([aria-label*="ubscribe"]) c3-icon,
+ytm-slim-video-action-bar-renderer
+  button[aria-label]:not([aria-label*="ubscribe"]) .yt-icon-shape {
+  /* "ubscribe" so this catches both Subscribe and Unsubscribe. */
+  opacity: 0 !important;
+}
+
+/* Every button that gets a drawn icon is named here rather than matching all
+   of them and excluding a few. The first attempt did the latter and skipped
+   "Subscribe" — but the subscribed state reads "Unsubscribe from …", so it
+   slipped past, received a ::before with no mask, and painted a solid square
+   across the middle of the button. Listing the six is verbose and cannot do
+   that. */
+ytm-slim-video-action-bar-renderer button[aria-label^="like"]::before,
+ytm-slim-video-action-bar-renderer button[aria-label^="Like"]::before,
+ytm-slim-video-action-bar-renderer button[aria-label^="Unlike"]::before,
+ytm-slim-video-action-bar-renderer button[aria-label^="Dislike"]::before,
+ytm-slim-video-action-bar-renderer button[aria-label^="Undislike"]::before,
+ytm-slim-video-action-bar-renderer button[aria-label="Share"]::before,
+ytm-slim-video-action-bar-renderer button[aria-label="Save"]::before,
+ytm-slim-video-action-bar-renderer button[aria-label*="Save to"]::before,
+ytm-slim-video-action-bar-renderer button[aria-label="More"]::before,
+ytm-slim-video-action-bar-renderer button[aria-label*="More actions"]::before,
+ytm-slim-video-action-bar-renderer button[aria-label*="Report"]::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 24px;
+  transform: translate(-50%, -50%);
+  background-color: currentColor;
+  pointer-events: none;
+}
+
+ytm-slim-video-action-bar-renderer button[aria-label^="like"]::before,
+ytm-slim-video-action-bar-renderer button[aria-label^="Like"]::before,
+ytm-slim-video-action-bar-renderer button[aria-label^="Unlike"]::before {
+  -webkit-mask: var(--ot-icon-like) center / 24px 24px no-repeat;
+  mask: var(--ot-icon-like) center / 24px 24px no-repeat;
+}
+
+ytm-slim-video-action-bar-renderer button[aria-label^="Dislike"]::before,
+ytm-slim-video-action-bar-renderer button[aria-label^="Undislike"]::before {
+  -webkit-mask: var(--ot-icon-dislike) center / 24px 24px no-repeat;
+  mask: var(--ot-icon-dislike) center / 24px 24px no-repeat;
+}
+
+ytm-slim-video-action-bar-renderer button[aria-label="Share"]::before {
+  -webkit-mask: var(--ot-icon-share) center / 24px 24px no-repeat;
+  mask: var(--ot-icon-share) center / 24px 24px no-repeat;
+}
+
+ytm-slim-video-action-bar-renderer button[aria-label="Save"]::before,
+ytm-slim-video-action-bar-renderer button[aria-label*="Save to"]::before {
+  -webkit-mask: var(--ot-icon-save) center / 24px 24px no-repeat;
+  mask: var(--ot-icon-save) center / 24px 24px no-repeat;
+}
+
+ytm-slim-video-action-bar-renderer button[aria-label="More"]::before,
+ytm-slim-video-action-bar-renderer button[aria-label*="More actions"]::before {
+  -webkit-mask: var(--ot-icon-more) center / 24px 24px no-repeat;
+  mask: var(--ot-icon-more) center / 24px 24px no-repeat;
+}
+
+ytm-slim-video-action-bar-renderer button[aria-label*="Report"]::before {
+  -webkit-mask: var(--ot-icon-report) center / 24px 24px no-repeat;
+  mask: var(--ot-icon-report) center / 24px 24px no-repeat;
 }
 
 /* The "Ask" sparkle is a 2024 AI addition. The wrapper goes too — hiding only
