@@ -1013,7 +1013,23 @@ yt-tab-shape[tab-title="Shorts"] {
   display: none !important;
 }
 
-/* Sheets and menus. */
+/* Bottom sheets — the ⋮ menus. Modern YouTube floats them as a rounded card
+   inset 8px with a 24px gap beneath; 2016 ran them full width, square and
+   flush to the bottom edge. Only the positioned container is touched; the
+   wrappers inside it are already square and full width.
+
+   `ytm-sheet-renderer` is the old component name and no longer appears in
+   the markup — kept in case a variant still serves it. */
+.ytSpecBottomSheetLayoutContainer {
+  border-radius: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+}
+
 ytm-sheet-renderer {
   border-radius: 0 !important;
   background: var(--ot-bg) !important;
