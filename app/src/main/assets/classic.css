@@ -441,6 +441,12 @@ ytm-pivot-bar-item-renderer[is-selected] svg,
   fill: var(--ot-red) !important;
 }
 
+/* The tab element itself is in this list, not just its children: the drawn
+   History and Library icons are masks filled with currentColor, so they take
+   the tab's colour. Recolouring only svg/c3-icon left those two at
+   --ot-text-dim (#767676) while YouTube's own icons sat at #606060 — the
+   drawn ones read visibly lighter than the rest of the bar. */
+.pivot-bar-item-tab[aria-selected="false"],
 .pivot-bar-item-tab[aria-selected="false"] .pivot-bar-item-title,
 .pivot-bar-item-tab[aria-selected="false"] svg,
 .pivot-bar-item-tab[aria-selected="false"] c3-icon,
@@ -527,6 +533,23 @@ ytm-pivot-bar-item-renderer[is-selected] svg,
 .pivot-shorts,
 .pivot-create {
   display: none !important;
+}
+
+/* Hiding the tab is not enough — each one sits in its own renderer, and that
+   renderer keeps its slot in the flex row. The Shorts one stayed as an empty
+   77px gap between History and Subscriptions, which is what threw the
+   spacing out. The container has to go too. */
+ytm-pivot-bar-item-renderer:has(.pivot-bar-item-tab.shorts),
+ytm-pivot-bar-item-renderer:has(.pivot-shorts),
+ytm-pivot-bar-item-renderer:has(.pivot-bar-item-tab.create),
+ytm-pivot-bar-item-renderer:has(.pivot-create) {
+  display: none !important;
+}
+
+/* Even quarters across the bar. */
+ytm-pivot-bar-renderer > * {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
 }
 
 /* ==========================================================================
