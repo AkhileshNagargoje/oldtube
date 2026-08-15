@@ -58,11 +58,19 @@ html[darker-dark-theme] {
   --ot-line: #e2e2e2;
   --ot-bg: #ffffff;
 
-  /* Tab-bar icons for the two entries YouTube no longer draws for us: a clock
-     for the injected History tab, a folder for Library. Material shapes of the
-     period, inlined as masks so they take currentColor. */
+  /* Tab-bar icons. All four are drawn rather than just the two YouTube stopped
+     providing: its current Home and Subscriptions glyphs are redrawn versions
+     of these, and mixing them with the period shapes was visible in the bar.
+     Material fills of the era, inlined as masks so they take currentColor.
+
+     --ot-icon-trending is the flame from the reference. It is unused, because
+     the slot it belongs to now leads to History and a flame over a "History"
+     label would be a lie. Swap it in if you relabel that tab. */
+  --ot-icon-home: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>');
+  --ot-icon-subs: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 8H4V6h16v2zm-2-6H6v2h12V2zm4 10v8c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2h16c1.1 0 2 .9 2 2zm-6 4l-6-3.27v6.53L16 16z"/></svg>');
   --ot-icon-history: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 3a9 9 0 00-9 9H1l3.9 3.9.1.1L9 12H6a7 7 0 117 7 6.9 6.9 0 01-4.9-2L6.7 18.4A9 9 0 1013 3zm-1 5v5l4.3 2.5.7-1.2-3.5-2.1V8z"/></svg>');
-  --ot-icon-library: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8z"/></svg>');
+  --ot-icon-library: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>');
+  --ot-icon-trending: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/></svg>');
 
   /* YouTube's own theme tokens, pinned to 2016 light. */
   --yt-spec-base-background: var(--ot-bg) !important;
@@ -492,6 +500,46 @@ ytm-pivot-bar-item-renderer[is-selected] svg,
   background-color: currentColor;
   -webkit-mask: var(--ot-icon-history) center / 24px 24px no-repeat;
   mask: var(--ot-icon-history) center / 24px 24px no-repeat;
+}
+
+/* Home and Subscriptions: YouTube's own glyphs are swapped for the period
+   ones, so all four icons in the bar come from the same set. Its versions are
+   redrawn — different weight and corner rounding — and next to the drawn clock
+   and folder the inconsistency shows. */
+.pivot-bar-item-tab.pivot-w2w c3-icon,
+.pivot-bar-item-tab.pivot-w2w svg,
+.pivot-bar-item-tab.pivot-subs c3-icon,
+.pivot-bar-item-tab.pivot-subs svg {
+  display: none !important;
+}
+
+.pivot-bar-item-tab.pivot-w2w::before,
+.pivot-bar-item-tab.pivot-subs::before {
+  content: "";
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin-bottom: 4px;
+  background-color: currentColor;
+}
+
+.pivot-bar-item-tab.pivot-w2w::before {
+  -webkit-mask: var(--ot-icon-home) center / 24px 24px no-repeat;
+  mask: var(--ot-icon-home) center / 24px 24px no-repeat;
+}
+
+.pivot-bar-item-tab.pivot-subs::before {
+  -webkit-mask: var(--ot-icon-subs) center / 24px 24px no-repeat;
+  mask: var(--ot-icon-subs) center / 24px 24px no-repeat;
+}
+
+/* Keep every tab stacking icon over label, including the ones whose original
+   icon element is now hidden. */
+.pivot-bar-item-tab {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 /* "You" becomes Library: hide the account avatar, draw a folder, and swap the
