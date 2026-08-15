@@ -29,18 +29,20 @@ html,
 html[dark],
 html[darker-dark-theme] {
   /* --- the app bar ------------------------------------------------------
-     The 2016-17 Android app: red bar, everything on it reversed out in white,
-     and a plain white "YouTube" wordmark — not the two-tone You[Tube] box,
-     which is the web/desktop mark of that era, not the app's.
+     Mid-2017, the target this skin matches: red bar, everything on it
+     reversed out in white, and a plain white "YouTube" wordmark. The white
+     bar and play-button logo arrived with the August 2017 redesign and are
+     a later look.
 
-     For the white web bar instead, swap these five values and set
-     --ot-logo-boxed to 1 further down:
+     For that post-August-2017 bar instead, swap these:
 
          --ot-bar:       #ffffff;
          --ot-bar-fg:    #030303;
          --ot-bar-dim:   #606060;
          --ot-bar-field: #f2f2f2;
-         --ot-logo-text: #282828;                                          */
+         --ot-logo-text: #282828;
+
+     and disable the drawn wordmark in the logo block further down.        */
   --ot-bar: #e62117;
   --ot-bar-fg: #ffffff;
   --ot-bar-dim: rgba(255, 255, 255, 0.75);
@@ -103,19 +105,17 @@ html[darker-dark-theme] {
    `:root[...]` is (0,2,0) and beats the `html[dark]` in the light palette
    above at (0,1,1), so these win regardless of order.               */
 :root[data-oldtube-theme="dark"] {
-  /* The bar stays red. 2018's dark theme greyed it to #212121, but the red
-     app bar is the whole identity of this skin — a dark grey bar reads as
-     modern YouTube immediately. Dark page, 2016 bar. For the faithful 2018
-     dark theme instead, set --ot-bar to #212121 and the status bar in
-     MainActivity.applySystemBars to match. */
-  --ot-bar: #e62117;
+  /* #212121 bar, as the 2018-19 dark theme had it. This was briefly red to
+     protect the 2016 skin's identity, but with the light theme now on 2019's
+     white bar there is nothing to protect — the grey bar is the accurate one. */
+  --ot-bar: #212121;
   --ot-bar-fg: #ffffff;
-  --ot-bar-dim: rgba(255, 255, 255, 0.75);
-  --ot-bar-field: rgba(0, 0, 0, 0.2);
+  --ot-bar-dim: rgba(255, 255, 255, 0.7);
+  --ot-bar-field: rgba(255, 255, 255, 0.1);
 
   --ot-logo-text: #ffffff;
   --ot-logo-box-bg: #ffffff;
-  --ot-logo-box-fg: #e62117;
+  --ot-logo-box-fg: #212121;
 
   --ot-red: #ff0000;
   --ot-text: #ffffff;
@@ -326,6 +326,10 @@ header.mobile-topbar-header .ytAttributedStringHost,
    the art and draw the pre-2017 mark with two pseudo-elements instead: white
    "You", then "Tube" reversed out of a white box. No image assets involved.  */
 
+/* Mid-2017 showed a plain white "YouTube" wordmark, so YouTube's own logo art
+   is hidden and the mark is drawn below. Comment this block out (and set
+   ::before's content to none) to fall back to whatever logo YouTube ships,
+   which is the post-August-2017 play button. */
 c3-icon.mobile-topbar-logo > span,
 c3-icon.mobile-topbar-logo svg,
 c3-icon#home-icon > span,
@@ -349,7 +353,7 @@ c3-icon#home-icon.mobile-topbar-logo {
    You[Tube] mark below is the web logo of the same era — swap the two
    `content` values to use it. */
 c3-icon.mobile-topbar-logo::before {
-  content: "YouTube";
+  content: "YouTube"; /* set to none to use YouTube's own logo instead */
   color: var(--ot-logo-text);
   font: 700 20px/1 Roboto, Arial, sans-serif;
   letter-spacing: -0.5px;
@@ -469,9 +473,9 @@ ytm-video-with-context-renderer:has(.big-shorts-singleton),
 ytm-rich-section-renderer:has(a[href^="/shorts"]),
 ytm-rich-section-renderer:has(a[href^="/playables"]),
 a[href^="/playables"],
-/* Community posts. The 2016 home feed carried videos and nothing else —
-   these are text-and-image posts threaded in between. The section wrapper
-   goes too, or its padding is left behind as a gap. */
+/* Community posts. The 2017 reference feeds are videos end to end, so these
+   text-and-image posts go. The section wrapper goes with them, or its padding
+   is left behind as a gap. */
 ytm-backstage-post-thread-renderer,
 ytm-backstage-post-renderer,
 ytm-rich-section-renderer:has(ytm-backstage-post-thread-renderer) {

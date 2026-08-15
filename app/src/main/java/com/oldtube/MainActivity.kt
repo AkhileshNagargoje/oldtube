@@ -25,9 +25,9 @@ private const val HOME = "https://m.youtube.com/"
 private const val TAG = "OldTube"
 
 /**
- * Whether to follow the phone's dark mode. Off: 2016 YouTube had no dark
- * theme, so the skin stays light regardless of the system setting. Set true
- * to opt in — the dark palette in classic.css is complete and current.
+ * Whether to follow the phone's dark mode. Off: this skin targets mid-2017,
+ * and YouTube had no dark theme on Android until July 2018. The dark palette
+ * in classic.css is complete and still correct — set true to opt in.
  */
 private const val FOLLOW_SYSTEM_DARK = false
 
@@ -186,9 +186,11 @@ class MainActivity : ComponentActivity() {
      */
     @Suppress("DEPRECATION")
     private fun applySystemBars() {
-        // Same in both themes: the app bar stays red in dark mode, so the
-        // status bar above it does too.
-        window.statusBarColor = 0xFFCC181E.toInt()
+        val dark = currentTheme() == "dark"
+        // Follows the app bar: the darker shade of 2017's red in light,
+        // #212121 in dark. Light icons over both.
+        window.statusBarColor = if (dark) 0xFF212121.toInt() else 0xFFCC181E.toInt()
+        window.decorView.systemUiVisibility = 0
     }
 
     private inner class SkinningWebViewClient : WebViewClient() {
