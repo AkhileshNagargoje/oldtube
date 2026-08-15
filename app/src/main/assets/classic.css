@@ -380,7 +380,13 @@ ytm-video-with-context-renderer:has(.big-shorts-singleton),
    `ytm-rich-item-renderer`, so nothing legitimate goes with them. */
 ytm-rich-section-renderer:has(a[href^="/shorts"]),
 ytm-rich-section-renderer:has(a[href^="/playables"]),
-a[href^="/playables"] {
+a[href^="/playables"],
+/* Community posts. The 2016 home feed carried videos and nothing else —
+   these are text-and-image posts threaded in between. The section wrapper
+   goes too, or its padding is left behind as a gap. */
+ytm-backstage-post-thread-renderer,
+ytm-backstage-post-renderer,
+ytm-rich-section-renderer:has(ytm-backstage-post-thread-renderer) {
   display: none !important;
 }
 
@@ -455,6 +461,15 @@ ytm-rich-item-renderer {
 
 ytm-media-item,
 .media-item {
+  border-bottom: none !important;
+}
+
+/* Card nesting varies by feed: Subscriptions wraps a
+   `ytm-video-with-context-renderer` inside a `ytm-rich-item-renderer`, and
+   both are in the list above, so both drew a line 11px apart. When they
+   nest, only the outer one draws. */
+ytm-rich-item-renderer ytm-video-with-context-renderer,
+ytm-rich-item-renderer ytm-compact-video-renderer {
   border-bottom: none !important;
 }
 
