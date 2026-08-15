@@ -933,14 +933,34 @@ yt-button-shape button {
   box-shadow: none !important;
 }
 
-/* Search suggestions: plain white list. */
+/* Search field. YouTube pills this at 40px, 24px once focused, through
+   `.ytSearchboxComponentInputBox*` — class names that none of the generic
+   de-rounding selectors in section 2 happen to match. */
+[class*="SearchboxComponentInputBox"] {
+  border-radius: 0 !important;
+}
+
+/* Search suggestions: plain white list.
+   The rows are transparent by default, so whatever sits behind the dropdown
+   shows through them — which is where the grey band down the side and across
+   the bottom bar came from. Painting the rows, not just the container, is
+   what closes it.
+
+   The three renderers below are the old component names and no longer appear
+   in the markup; the live ones are the ytSuggestionComponent* classes. */
+.ytSearchboxComponentSuggestionsContainer,
+.ytSuggestionComponentSuggestion,
+.ytSuggestionComponentRightContainer,
 ytm-search-suggestion-renderer,
 .searchbox-suggestions,
 ytm-autocomplete-suggestion-renderer {
   background: var(--ot-bg) !important;
   border-radius: 0 !important;
-  border-bottom: 1px solid var(--ot-line) !important;
   font-size: 14px !important;
+}
+
+.ytSuggestionComponentSuggestion {
+  border-bottom: 1px solid var(--ot-line) !important;
 }
 
 /* Channel page header: no giant rounded banner treatment. */
