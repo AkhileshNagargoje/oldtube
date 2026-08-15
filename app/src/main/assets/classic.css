@@ -421,10 +421,28 @@ ytm-pivot-bar-item-renderer[selected],
   background: transparent !important;
 }
 
-ytm-pivot-bar-item-renderer[is-selected] svg,
+/* Colouring the tab element is not enough: the label and the icon inside it
+   carry their own colours, so the selected tab kept a near-black label and
+   icon under a red parent. Period screenshots show the selected tab red
+   throughout and the rest an even grey, icons included. */
+.pivot-bar-item-tab[aria-selected="true"] .pivot-bar-item-title,
 .pivot-bar-item-tab[aria-selected="true"] svg,
+.pivot-bar-item-tab[aria-selected="true"] c3-icon,
+.pivot-bar-item-tab[aria-selected="true"] .yt-icon-shape,
+ytm-pivot-bar-item-renderer[is-selected] svg,
 .pivot-bar-item-tab[is-active] svg {
+  color: var(--ot-red) !important;
   fill: var(--ot-red) !important;
+}
+
+.pivot-bar-item-tab[aria-selected="false"] .pivot-bar-item-title,
+.pivot-bar-item-tab[aria-selected="false"] svg,
+.pivot-bar-item-tab[aria-selected="false"] c3-icon,
+.pivot-bar-item-tab[aria-selected="false"] .yt-icon-shape {
+  /* #606060, matching the reference, rather than the lighter --ot-text-dim
+     used for bylines. */
+  color: #606060 !important;
+  fill: #606060 !important;
 }
 
 /* Tabs that didn't exist in 2016. YouTube names these `.shorts` and
