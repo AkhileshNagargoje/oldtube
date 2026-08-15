@@ -1138,6 +1138,26 @@ ytm-slim-video-action-bar-renderer button[aria-label="Ask"],
    calculation and makes it silently stop rendering Dislike and Share. Absolute
    positioning leaves the line measuring exactly as it did before, so all four
    actions survive; the container just reserves height underneath for the row. */
+/* YouTube hangs a -7px right margin on each action button. The last one's
+   eats into the right-hand gap, so the row sat 24px from the left and 17px
+   from the right — off-centre for a reason that has nothing to do with the
+   distribution mode. Zeroing them costs 28px of width, which is safe here
+   because Subscribe and the avatar are out of flow: only 192px of the 359px
+   row is in-flow content. */
+.slim-video-action-bar-actions > like-button-view-model,
+.slim-video-action-bar-actions > dislike-button-view-model,
+.slim-video-action-bar-actions > button-view-model {
+  margin-right: 0 !important;
+}
+
+/* The subtitle line carried channel, likes, views and date; 2017 showed the
+   view count and nothing else. The channel name is the row directly beneath,
+   so repeating it is what made this line look crowded. */
+.slim-video-information-channel-name,
+.slim-video-information-like-count {
+  display: none !important;
+}
+
 .slim-video-action-bar-actions {
   position: relative !important;
   padding-bottom: 78px !important;
